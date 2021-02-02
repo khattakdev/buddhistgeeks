@@ -211,6 +211,14 @@ export const CohortMembers = (props:{cohort:Cohort, isFacilitator: boolean, muta
       }, h('a', {className: 'notBlue'}, props.cohort.people.display_name || props.cohort.people.username)),
       props.cohort.people.pronouns ? h('span.textSecondary', {}, ` (${props.cohort.people.pronouns})`) : null
     ]),
+    // message facilitator - shows for logged in and anon users; hidden on things you're facilitating
+    props.isFacilitator ? null : h(Info, [
+      `Questions about this `, 
+      props.cohort.courses.type === 'club' ? `club` : `course`,
+      `? `,
+      h('a', {href: `https://forum.hyperlink.academy/new-message?username=` + props.cohort.people.username, target: `_blank`}, `Message the facilitator`),
+      ` on the forum.`
+    ]),
 
     props.isFacilitator ? h(Info, [`💡 You can edit your bio in the profile tab on your `, h(Link, {href: '/dashboard'}, h('a', 'dashboard'))]) : null,
 
