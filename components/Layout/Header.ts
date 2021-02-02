@@ -63,7 +63,7 @@ let LearnMenuItems = ()=> h('div', {style:{textAlign:'right', display:"grid"}}, 
     h('b.mono', 'courses'),
     h('p', "structured deep learning")
   ])),
-  h(Link, {href:"/courses#clubs"}, h(LearnMenuItem, [
+  h(Link, {href:"/clubs"}, h(LearnMenuItem, [
     h('b.mono', 'clubs'),
     h('p', "social peer learning")
   ])),
@@ -117,7 +117,7 @@ const MobileMenu = (props:{user:any, mutateUser: any}) => {
         h('b', 'courses'),
         h('p', "structured deep learning")
       ])),
-      h(Link, {href:"/courses#clubs"}, h(NavLink, [
+      h(Link, {href:"/clubs"}, h(NavLink, [
         h('b', 'clubs'),
         h('p', "social peer learning")
       ])),

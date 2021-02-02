@@ -131,3 +131,14 @@ border-width: 1px;
 border-color: ${colors.grey55};
 border-radius: 2px;
 `
+
+export const FlexGrid= styled('div')<{min: number, mobileMin: number}>`
+width: 100%;
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(${props=>props.min}px, 1fr));
+
+${Mobile} {
+grid-template-columns: repeat(auto-fill, minmax(${props=>props.mobileMin}px, 1fr));
+}
+grid-gap: 32px;
+`

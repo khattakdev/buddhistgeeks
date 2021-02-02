@@ -142,4 +142,7 @@ padding: 0;
 &:hover {
 cursor: pointer;
 }
+&:focus {
+    outline: none;
+}
 `
