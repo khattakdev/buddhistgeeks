@@ -67,7 +67,7 @@ type ListingProps = {
 }
 export const ClubListing = (props:ListingProps)=>{
   return h(CourseContainer, [
-    h(ClubHeader, props.card_image.split(',').map(src=> h('img', {src}))),
+    h(ClubHeader, props.card_image.split(',').map(src=> h('img', {src, height: '32px', width: '32px'}))),
     h(Link, {href:`/courses/${props.slug}/${props.id}`}, h('a', {style:{textDecoration:'none'}}, h('h3', props.name))),
     props.status === 'draft' ? h(Pill, {red:true}, 'draft') : null,
     h('p', props.description),
@@ -77,7 +77,7 @@ export const ClubListing = (props:ListingProps)=>{
 
 export const CourseListing = (props:ListingProps)=>{
   return h(Box, {h:true, style:{gridAutoColumns:"auto"}}, [
-    h('img', {src: props.small_image, style:{height: '128px', border: '1px solid', borderRadius: '64px', boxSizing:"border-box"}}),
+    h('img', {src: props.small_image, height: '128px', width: '128px', style:{border: '1px solid', borderRadius: '64px', boxSizing:"border-box"}}),
     h(CourseContainer, [
       h(Link, {href:`/courses/${props.slug}/${props.id}`}, h('a', {style:{textDecoration:'none'}}, h('h3', props.name))),
       props.status === 'draft' ? h(Pill, {red:true}, 'draft') : null,
