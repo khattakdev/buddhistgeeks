@@ -63,11 +63,11 @@ export const useUserCourses = ()=>{
 }
 
 export type Courses = Success<CourseResult>
-export const useCourses = (initialData?:Success<CourseResult>) => {
-  return useSWR('/api/courses', async (api) => {
+export const useCourses = (options?:Partial<{type: "course" | "club", initialData?:Success<CourseResult>}>) => {
+  return useSWR(`/api/courses${options?.type ? `?type=${options.type}`: ''}`, async (api) => {
     let res = await callApi<null, CourseResult>(api)
     return res.result
-  }, {initialData})
+  }, {initialData:options?.initialData})
 }
 
 export const useDiscounts = (id: number) => {

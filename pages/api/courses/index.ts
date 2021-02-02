@@ -32,19 +32,20 @@ export type CreateCourseResponse = ResultType<typeof createCourse>
 
 export default APIHandler({POST: createCourse, GET: getCourses})
 
-export const coursesQuery = () => prisma.courses.findMany({
-  where: {status: "live"},
+export const coursesQuery = (options?:Partial<{type:'course' | 'club'}>) => prisma.courses.findMany({
+  where: {status: "live", type: options?.type || undefined},
   include: {
     course_cohorts: {
       where: {AND: [{live:true}, {start_date: {gt: (new Date()).toISOString()}}]},
-      select: {start_date: true, id: true, people_in_cohorts: {select:{cohort: true}}},
+      select: {name: true, start_date: true, id: true, people_in_cohorts: {select:{cohort: true}}},
       orderBy: {start_date: "desc"},
     }
   }
 })
 
-async function getCourses() {
-  let courses = await coursesQuery()
+async function getCourses(req:Request) {
+  console.log(req.query)
+  let courses = await coursesQuery(req.query)
   return {status: 200, result: {courses}} as const
 }
 

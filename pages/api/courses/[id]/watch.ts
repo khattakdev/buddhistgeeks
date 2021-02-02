@@ -13,7 +13,6 @@ export default APIHandler(watchCourse)
 
 async function watchCourse(req:Request) {
   let msg = req.body as Partial<WatchCourseMsg>
-  console.log(msg)
   let courseId = parseInt(req.query.id as string)
   if(typeof msg.watching !== 'boolean') return {status: 400, result: "ERROR: no watching property on request"} as const
 
@@ -53,12 +52,10 @@ async function watchCourse(req:Request) {
     })
   }
   else {
-    await prisma.watching_courses.delete({
+    await prisma.watching_courses.deleteMany({
       where: {
-        email_course: {
-          course: courseId,
-          email: email,
-        }
+        email,
+        course: courseId
       }
     })
   }

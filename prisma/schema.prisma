@@ -87,6 +87,7 @@ model courses {
   type                               course_types                   @default(course)
   course_group                       Int
   maintainer_group                   Int
+  small_image                        String                         @default("https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/course-illustrations/new-course-small.png")
   course_groupTodiscourse_groups     discourse_groups               @relation("courses_course_groupTodiscourse_groups", fields: [course_group], references: [id])
   maintainer_groupTodiscourse_groups discourse_groups               @relation("courses_maintainer_groupTodiscourse_groups", fields: [maintainer_group], references: [id])
   course_cohorts                     course_cohorts[]
