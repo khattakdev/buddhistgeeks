@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import {  Input, Error, Info, Textarea, CheckBox} from 'components/Form'
 import { Primary } from 'components/Button'
-import { LabelBox, FormBox, Box } from 'components/Layout'
+import { LabelBox, FormBox } from 'components/Layout'
 
 import { useApi } from 'src/apiHelpers'
 import { useUserData } from 'src/data'
@@ -48,7 +48,6 @@ const CreateCourse = ()=> {
       ]),
       h(LabelBox, {gap:8}, [
         h('h4', 'Name'),
-        h(Box, {gap: 4}, [
           h(Input, {
             required: true,
             type: 'text',
@@ -56,20 +55,15 @@ const CreateCourse = ()=> {
             value: formData.name,
             onChange: e => setFormData({...formData, name: e.currentTarget.value})
           }),
-          h('small.textSecondary', {style:{justifySelf: 'right'}}, `${formData.name.length}/50`)
-        ])
       ]),
       h(LabelBox, {gap:8}, [
         h('h4', 'Description'),
-        h(Box, {gap: 4}, [
           h(Textarea, {
             required: true,
             maxLength: 200,
             value: formData.description,
             onChange: e => setFormData({...formData, description: e.currentTarget.value})
           }),
-          h('small.textSecondary', {style:{justifySelf: 'right'}}, `${formData.description.length}/200`)
-        ])
       ]),
       h(LabelBox, {gap:8}, [
         h('h4', 'Duration'),

@@ -83,7 +83,7 @@ left: -16px;
 float: right;
 `
 
-export let Input = styled('input')<{readOnly?:boolean}>`
+let StyledInput = styled('input')<{readOnly?:boolean}>`
 min-width: 0;
 padding: 12px 16px;
 border: 1px solid;
@@ -101,7 +101,15 @@ outline: none;
 `: ''}
 `
 
-export const Textarea = styled('textarea')`
+export const Input = (props: Parameters<typeof StyledInput>[0]) => {
+  if(!props.maxLength || typeof props.value !== 'string') return h(StyledInput, props)
+  return h(Box, {gap: 4}, [
+    h(StyledInput, props),
+    h('small.textSecondary', {style:{justifySelf: 'right'}}, `${props.value.length}/${props.maxLength}`)
+  ])
+}
+
+const StyledTextarea = styled('textarea')`
 resize: vertical;
 padding: 12px 16px;
 border: 1px solid;
@@ -113,6 +121,14 @@ height: 128px;
 font-family: Lato;
 border-radius: 2px;
 `
+
+export const Textarea = (props: Parameters<typeof StyledTextarea>[0]) => {
+  if(!props.maxLength || typeof props.value !== 'string') return h(StyledTextarea, props)
+  return h(Box, {gap:4}, [
+    h(StyledTextarea, props),
+    h('small.textSecondary', {style:{justifySelf: 'right'}}, `${props.value.length}/${props.maxLength}`)
+  ])
+}
 
 export const Error = styled('div')`
 background-color: ${colors.backgroundRed};
