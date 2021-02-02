@@ -1,7 +1,6 @@
 import h from 'react-hyperscript'
 import { InferGetStaticPropsType } from "next"
 import { getPublicEventsQuery } from "pages/api/events"
-import Link from 'next/link'
 import { Box, FlexGrid } from 'components/Layout'
 import {EventCard} from 'components/Cards/EventCard'
 
@@ -20,10 +19,10 @@ export default function Events(props:Props) {
 
   return h(Box, {gap:64}, [
     h('h1', "Upcoming Events"),
-    h(FlexGrid, {min: 400, mobileMin: 300}, upcomingEvents.map(ev => h(Link, {passHref:true, href:`/events/${ev.event}`}, h(EventCard, {cost: ev.cost, ...ev.events})))),
+    h(FlexGrid, {min: 400, mobileMin: 300}, upcomingEvents.map(ev => h(EventCard, {cost: ev.cost, ...ev.events}))),
     h(Box, {gap:32}, [
       h('h2', "Past Events"),
-      h(FlexGrid, {min: 400, mobileMin: 300}, pastEvents.map(ev => h(Link, {passHref:true, href:`/events/${ev.event}`}, h(EventCard, {cost:ev.cost, ...ev.events}))))
+      h(FlexGrid, {min: 400, mobileMin: 300}, pastEvents.map(ev => h(EventCard, {cost:ev.cost, ...ev.events})))
     ])
   ])
 }

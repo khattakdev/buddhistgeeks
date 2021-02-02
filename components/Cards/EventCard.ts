@@ -4,9 +4,10 @@ import {Card} from '.'
 import { colors } from 'components/Tokens'
 import { Box, Seperator } from 'components/Layout'
 import { prettyDate } from 'src/utils'
+import Link from 'next/link'
 
-export const EventCard = (props:{name: string, start_date: string, cost: number})=>{
-  return h(Container, [
+export const EventCard = (props:{name: string, start_date: string, cost: number, id: number})=>{
+  return h(Link, {href:`/events/${props.id}`}, h(Container, [
     h(EventCardHeader),
     h(Box, {padding:16, style:{border: '1px solid', borderTop: 'none', borderRadius: '2px'}}, [
       h(Box, {gap:8},[
@@ -18,8 +19,7 @@ export const EventCard = (props:{name: string, start_date: string, cost: number}
         h('span.textSecondary', `${props.cost === 0 ? "FREE" : '$'+props.cost}`)
       ])
     ]),
-
-  ])
+  ]))
 }
 
 let EventCardHeader = styled('div')`
