@@ -78,7 +78,7 @@ display: none;
 export const ClubCohortCard = (props: Props) => {
   let spotsLeft = props.course.cohort_max_size === 0 || !props.people_in_cohorts ? null : props.course.cohort_max_size - props.people_in_cohorts.length
   return h(Link, {
-    href: `/courses/${props.course.slug}/${props.id}`,
+    href: `/courses/${props.course.slug}/${props.course.id}/cohorts/${props.id}`,
     passHref: true
   }, [
     h(ClubCardContainer, [
