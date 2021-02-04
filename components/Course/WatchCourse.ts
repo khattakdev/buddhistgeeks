@@ -12,6 +12,7 @@ import { Input } from 'components/Form'
 import { LinkButton, Primary } from 'components/Button'
 import { useDebouncedEffect } from 'src/hooks'
 import { Modal } from 'components/Modal'
+import { AccentImg } from 'components/Images'
 
 export function WatchCourse(props:{id: number}) {
   let {data: userCourses, mutate} = useUserCourses()
@@ -24,7 +25,7 @@ export function WatchCourse(props:{id: number}) {
   return h(WatchCourseBox, [
     h(Icon, {src: watching ? '/img/watching.png' : '/img/not-watching.png'}),
     h("div", [
-      h('p', [watching ? "You're watching this course" : "Want emails on new cohorts?"]),
+      h('p', [watching ? "You get emails about new cohorts!" : "Want emails on new cohorts?"]),
       h(LinkButton, {onClick:async (e: React.MouseEvent)=>{
         e.preventDefault()
         if(loading || !user || !userCourses) return
@@ -35,12 +36,12 @@ export function WatchCourse(props:{id: number}) {
           if(watching) mutate({...userCourses, watching_courses: userCourses.watching_courses.filter(x=>x.course !== props.id)})
           else mutate({...userCourses, watching_courses: [...userCourses.watching_courses, {course: props.id, email: user.email}]})
         }
-      }}, loading ? h(Loader) : watching? "Unwatch?" : "Watch this course!" )
+      }}, loading ? h(Loader) : watching? "Unsubscribe?" : "Subscribe!" )
     ])
   ])
 }
 
-
+// This component appears at the bottom of course and club listings. 
 export function WatchCourseInline(props:{id:number}) {
   let {data: userCourses, mutate} = useUserCourses()
   let {data: user} = useUserData()
@@ -66,7 +67,7 @@ export function WatchCourseInline(props:{id:number}) {
     ]),
     h(WatchCourseInlineButton, {onClick}, [
       h(Bell, {blue: !!watching}),
-      h('p.textSecondary', [watching ? "You're watching this course" : "Want emails on new cohorts?"])
+      h('small.textSecondary', [watching ? "You get updates about this course!" : h('span', [h('u', "Get updates",), " on new cohorts"])])
     ])
   ])
 }
@@ -81,15 +82,22 @@ grid-gap: 8px;
 padding: 0;
 grid-template-columns: min-content auto;
 &:hover {
-cursor: pointer;
+  cursor: pointer;
+  small {
+    color: blue;
+  }
+  path, svg {
+    fill: blue;
+  }
 }
 &:focus {
-outline: none;
+  outline: none;
 }
 
 text-align: left;
 `
 
+// Inline Watch Button pops this modal to collect emails for users who are not logged in 
 let EmailWatchingModal = (props: {id:number}) => {
   let [watching, setWatching] = useState(false)
   let [email, setEmail] = useState('')
@@ -106,15 +114,23 @@ let EmailWatchingModal = (props: {id:number}) => {
     }
   }
 
-  return  h(Box, {gap: 8}, [
-    h('b', [watching ? "You're watching this course" : "Email me when new cohorts are scheduled"]),
-    watching ? null : h(FormBox, {gap:8, onSubmit}, [
+  return  h(Box, {gap: 16}, [
+    h('div', {style:{textAlign:'center'}}, [watching 
+      ? h(Box, [h(AccentImg, {src: '/img/success.gif', alt: "A little dragon who is happy for you!", style:{margin:'auto auto'}}),
+        h('b', "Thanks! We'll email you as soon as there's a new cohort!"), 
+      ])
+      : h('b', "Leave your email for updates on new cohorts of this course"),
+    ]),
+    watching ? null : h(FormBox, {onSubmit}, [
       h(Input, {value:email, type: 'email', placeholder: 'your email', onChange:(e)=>setEmail(e.currentTarget.value)}),
       h(Primary, {type: 'submit', disabled: !email, style:{justifySelf:'center'}}, loading ? h(Loader) : "Subscribe" )
     ])
   ])
 
 }
+// END Inline Watch Button Modal
+
+// END Inline Watch Button
 
 let EmailWatching = (props:{id: number})=>{
   let [watching, setWatching] = useState(false)
@@ -134,7 +150,7 @@ let EmailWatching = (props:{id: number})=>{
   return h(WatchCourseBox, [
     h(Icon, {src: watching ? '/img/watching.png' : '/img/not-watching.png'}),
     h(Box, {gap: 8}, [
-      h('b', [watching ? "You're watching this course" : "Email me when new cohorts are scheduled"]),
+      h('b', [watching ? "You get emails about new cohorts!" : "Email me when new cohorts are scheduled"]),
       watching ? null : h(FormBox, {gap:8, onSubmit}, [
         h(Input, {value:email, type: 'email', placeholder: 'your email', onChange:(e)=>setEmail(e.currentTarget.value)}),
         h(LinkButton, {type: 'submit', style:{justifySelf:'right'}}, loading ? h(Loader) : "subscribe" )

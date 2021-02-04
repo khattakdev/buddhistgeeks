@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import styled from '@emotion/styled'
 import { useEffect } from 'react'
 
-import {colors} from 'components/Tokens'
+import {colors, Mobile} from 'components/Tokens'
 import { Box, WhiteContainer, FlexGrid} from 'components/Layout'
 import {ClubCohortCard, CourseCohortCard} from 'components/Cards/CohortCard'
 import {ClubListing, CourseListing} from 'components/pages/CourseAndClubList'
@@ -13,7 +13,7 @@ import { PageLoader } from 'components/Loader'
 import { useUserCohorts, useUserData, useUserCourses, useProfileData } from 'src/data'
 import { Tabs } from 'components/Tabs'
 import Settings from 'components/pages/dashboard/Settings'
-import {Primary, SmallLinkButton} from 'components/Button'
+import {Primary, Secondary, SmallLinkButton} from 'components/Button'
 import { EnrolledCohort } from 'components/pages/dashboard/EnrolledCohort'
 import { Calendar } from 'components/Icons'
 
@@ -80,19 +80,21 @@ const Dashboard = () => {
                   return h(EnrolledCohort, {cohort, facilitating})
                 }))
             ]),
-          activeCohorts.length === 0 ? null : h(Box, {padding: 32, style:{backgroundColor: colors.accentPeach}}, [
+
+          activeCohorts.length === 0 ? null : h(MoreLearningBanner, [
             h(Box, {ma: true, style:{textAlign:"center", justifyItems:"center"}}, [
-              h('h2', COPY.courseListHeader),
-              h(Box, {h: true}, [
-                h(Link, {href: '/courses'}, h('a', {}, h(Primary, "Courses"))),
-                h(Link, {href: '/clubs'}, h('a', {}, h(Primary, "Clubs"))),
-                h(Link, {href: '/events'}, h('a', {}, h(Primary, "Events")))
+              h('h3', COPY.courseListHeader),
+              h(MoreLearningBannerButtons, [
+                h(Link, {href: '/courses'}, h('a', {}, h(Secondary, "Courses"))),
+                h(Link, {href: '/clubs'}, h('a', {}, h(Secondary, "Clubs"))),
+                h(Link, {href: '/events'}, h('a', {}, h(Secondary, "Events")))
               ])
             ])
           ]),
+
         ]),
         Completed: completedCohorts.length === 0 ? null : h(Box, [
-          h(FlexGrid, {min: 400, mobileMin:400}, completedCohorts.map(cohort => {
+          h(FlexGrid, {min: 400, mobileMin:320}, completedCohorts.map(cohort => {
             if(cohort.courses.type === 'club') return ClubCohortCard({...cohort, course: cohort.courses})
             return h(CourseCohortCard, {...cohort, course:cohort.courses})
             }))
@@ -100,7 +102,7 @@ const Dashboard = () => {
         Maintaining: userCourses.maintaining_courses.length === 0 ? null : h(Box, {gap: 32}, [
           h(Box, [
             courses.length > 0 ? h('h2', "Courses") : null,
-            h(FlexGrid, {min: 400, mobileMin: 400}, courses.map(course=>h(CourseListing, course))),
+            h(FlexGrid, {min: 400, mobileMin: 320}, courses.map(course=>h(CourseListing, course))),
           ]),
           h(Box, [
             clubs.length > 0 ? h('h2', "Clubs") : null,
@@ -119,6 +121,29 @@ const Dashboard = () => {
       }}),
   ])
 }
+
+export const MoreLearningBanner = styled('div')`
+padding: 32px;
+background-color: ${colors.accentPeach};
+display: grid;
+grid-template-rows: auto auto;
+grid-gap: 16px;
+
+`
+
+export const MoreLearningBannerButtons = styled('div')`
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+grid-gap: 16px;
+grid-auto-flow: column;
+
+${Mobile} {
+  grid-template-columns: auto;
+  grid-template-rows: repeat(3, auto); 
+}
+
+`
+
 
 export let EmptyImg = styled ('img') `
 image-rendering: pixelated;

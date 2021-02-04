@@ -22,7 +22,6 @@ type Props = {
   }
 }
 export const CourseCohortCard = (props:Props) => {
-  let spotsLeft = props.course.cohort_max_size === 0 || !props.people_in_cohorts ? null : props.course.cohort_max_size - props.people_in_cohorts.length
   return h(Link,{
     href:`/courses/${props.course.slug}/${props.course.id}/cohorts/${props.id}`
   }, h(Container, [
@@ -36,8 +35,9 @@ export const CourseCohortCard = (props:Props) => {
       ]),
       h('p.textSecondary', props.course.description),
       h('span', [
-        h('b', `${cohortPrettyDate(props.start_date, props.completed)} ${spotsLeft ? '| ' : ""}`),
-        !!spotsLeft && h('span.accentSuccess', `${spotsLeft} spots left!`)
+        h('b', `${cohortPrettyDate(props.start_date, props.completed)}`),
+        h(ShowSpotsLeft, {cohort_max_size:props.course.cohort_max_size, people_in_cohorts:props.people_in_cohorts?.length||0, start_date: props.start_date})
+
       ])
     ])
   ]))
@@ -76,25 +76,25 @@ display: none;
 `
 
 export const ClubCohortCard = (props: Props) => {
-  let spotsLeft = props.course.cohort_max_size === 0 || !props.people_in_cohorts ? null : props.course.cohort_max_size - props.people_in_cohorts.length
   return h(Link, {
     href: `/courses/${props.course.slug}/${props.course.id}/cohorts/${props.id}`,
     passHref: true
   }, [
-    h(ClubCardContainer, [
-      h(Box, {style:{backgroundColor: colors.accentLightBlue, padding: '16px', height: '8.25rem'}}, [
+    h(ClubCohortCardContainer, [
+      h(ClubCohortCardHeader, [
         h(Box, {h: true}, props.course.card_image.split(',').map(src=> h('img', {src}))),
         h(Box,{gap:4},[
           h('h3', props.course.name),
           h('h4.textSecondary', isNaN(parseInt(props.name)) ? props.name  :`Cohort #${props.name}` ),
         ])
       ]),
-      h(ClubCardContent, [
+      h(ClubCohortCardContent, [
         h('p', props.course.description),
         h('div', [
           h('span', [
-            h('b', `${cohortPrettyDate(props.start_date, props.completed)} ${spotsLeft ? '| ' : ""}`),
-            !!spotsLeft && h('span.accentSuccess', `${spotsLeft} spots left!`)
+            h('b', `${cohortPrettyDate(props.start_date, props.completed)}`),
+            h(ShowSpotsLeft, {cohort_max_size:props.course.cohort_max_size, people_in_cohorts:props.people_in_cohorts?.length||0, start_date: props.start_date})
+
           ])
         ])
       ]),
@@ -102,7 +102,21 @@ export const ClubCohortCard = (props: Props) => {
   ])
 }
 
-const ClubCardContent = styled('div')`
+
+const ClubCohortCardHeader = styled('div')`
+display: grid;
+grid-gap: 16px;
+background-color: ${colors.accentLightBlue};
+padding: 16px;
+height: 8.25rem;
+
+${Mobile} {
+  height: auto;
+}
+
+`
+
+const ClubCohortCardContent = styled('div')`
 display: grid;
 grid-template-rows: auto min-content;
 height: 100%;
@@ -111,7 +125,7 @@ grid-gap: 16px;
 padding: 16px;
 `
 
-const ClubCardContainer = styled('a')`
+const ClubCohortCardContainer = styled('a')`
 max-width: 320px;
 background-color: white;
 border: 1px solid;
@@ -119,17 +133,16 @@ display: grid;
 grid-template-rows: min-content auto;
 border-color: ${colors.grey15};
 text-decoration: none;
-
 color: ${colors.textPrimary};
 
 &:visited {
-color: inherit;
+  color: inherit;
 }
 
 &:hover, &:active, &:focus {
-cursor: pointer;
-transform: translate(-4px, -4px);
-box-shadow: 4px 4px ${colors.grey15};
+  cursor: pointer;
+  transform: translate(-4px, -4px);
+  box-shadow: 4px 4px ${colors.grey15};
 }
 `
 
@@ -137,4 +150,20 @@ export const cohortPrettyDate = (start_date: string, completed?: string | null)=
   if(completed) return `${prettyDate(start_date)} - ${prettyDate(completed || '')}`
   if(new Date() > new Date(start_date)) return `Started ${prettyDate(start_date)}`
   return `Starts ${prettyDate(start_date)}`
+}
+
+export const ShowSpotsLeft = (props: {cohort_max_size:number, people_in_cohorts:number, start_date:string}) => {
+
+  let startDate = new Date(props.start_date)
+  let now = new Date()
+
+  if (props.cohort_max_size === 0 || startDate < now ) return null
+  if(props.cohort_max_size === props.people_in_cohorts) return h('span', [
+    h('b.textPrimary', ' | '), 
+    h('span.textSecondary', 'Cohort full :(')
+  ])
+  else return h('span', [
+    h('b.textPrimary', ' | '),
+    h('span.accentSuccess', `${props.cohort_max_size - props.people_in_cohorts} spots left!`)
+  ])
 }
