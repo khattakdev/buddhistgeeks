@@ -59,6 +59,10 @@ grid-auto-columns: max-content;
 grid-auto-flow: column;
 grid-template-rows: auto;
 border-bottom: 3px solid;
+
+${Mobile} {
+  grid-gap:16px;
+}
 `
 
 const VerticalTab = styled('a')<{selected: boolean}>`
