@@ -191,7 +191,7 @@ const Event = (props: {
         !expanded || event.events.description === '' ? null
           : h(Box, [
             h('div', {
-              style: {padding: '32px', backgroundColor: 'white', border: 'dotted 1px'}}, h(Text, {source: event.events.description})),
+              style: {padding: '32px', backgroundColor: 'white', border: 'dotted 1px', overflow:'auto', overflowWrap: "break-word"}}, h(Text, {source: event.events.description})),
             event.events.people_in_events.length === 0 ? null : h('p.textSecondary', [h('b', 'Attendees: '), event.events.people_in_events.map(p=>p.people.display_name || p.people.username).join(', ')])
           ])
       ])
