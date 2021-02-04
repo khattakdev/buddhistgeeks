@@ -64,13 +64,13 @@ async function updateCourse(req: Request) {
   if(msg.name) {
     slug = slugify(msg.name)
     await Promise.all([
-      updateGroup(course.maintainer_groupTodiscourse_groups.name, slug+'-m'),
+      updateGroup(course.maintainer_groupTodiscourse_groups.id, slug+'-m'),
       updateCategory(course.category_id, {
         name: msg.name,
         slug: slug
       }),
-      updateGroup(course.course_groupTodiscourse_groups.name, slug),
-      ...course.course_cohorts.map(cohort => updateGroup(cohort.discourse_groups.name, slug+'-'+cohort.name))
+      updateGroup(course.course_groupTodiscourse_groups.id, slug),
+      ...course.course_cohorts.map(cohort => updateGroup(cohort.discourse_groups.id, slug+'-'+cohort.name))
     ])
   }
 

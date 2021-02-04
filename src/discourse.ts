@@ -134,14 +134,14 @@ export const createCategory = async (name: string, options?: {
   return false as const
 }
 
-export async function updateGroup(name: string, newName: string) {
-  let result = await fetchWithBackoff(`${DISCOURSE_URL}/g/${name}.json`, {
+export async function updateGroup(id: number, name: string) {
+  let result = await fetchWithBackoff(`${DISCOURSE_URL}/g/${id}.json`, {
     method: "PUT",
     headers: {
       ...headers,
       "Content-Type": 'application/json; charset=utf-8'
     },
-    body: JSON.stringify({name: newName})
+    body: JSON.stringify({name})
   })
   if(result.status !== 200) console.log(await result.text())
   else return true
