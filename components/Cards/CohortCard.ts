@@ -23,7 +23,8 @@ type Props = {
 }
 export const CourseCohortCard = (props:Props) => {
   return h(Link,{
-    href:`/courses/${props.course.slug}/${props.course.id}/cohorts/${props.id}`
+    href:`/courses/${props.course.slug}/${props.course.id}/cohorts/${props.id}`,
+    passHref: true,
   }, h(Container, [
     h(ImageContainer, [
       h('img', {src: props.course.card_image}),
@@ -79,8 +80,7 @@ export const ClubCohortCard = (props: Props) => {
   return h(Link, {
     href: `/courses/${props.course.slug}/${props.course.id}/cohorts/${props.id}`,
     passHref: true
-  }, [
-    h(ClubCohortCardContainer, [
+  }, h(ClubCohortCardContainer, [
       h(ClubCohortCardHeader, [
         h(Box, {h: true}, props.course.card_image.split(',').map(src=> h('img', {src}))),
         h(Box,{gap:4},[
@@ -99,7 +99,7 @@ export const ClubCohortCard = (props: Props) => {
         ])
       ]),
     ])
-  ])
+  )
 }
 
 
