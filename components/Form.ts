@@ -103,8 +103,16 @@ outline: none;
 
 export const Input = (props: Parameters<typeof StyledInput>[0]) => {
   if(!props.maxLength || typeof props.value !== 'string') return h(StyledInput, props)
+
+  let placeholder: string | undefined
+  if(props.type === 'date') placeholder = 'yyyy-mm-dd'
+  if(props.type === 'time') placeholder = '23:59'
+
   return h(Box, {gap: 4}, [
-    h(StyledInput, props),
+    h(StyledInput, {
+      ...props,
+      placeholder: placeholder || props.placeholder
+    }),
     h('small.textSecondary', {style:{justifySelf: 'right'}}, `${props.value.length}/${props.maxLength}`)
   ])
 }
