@@ -3,12 +3,12 @@ import { Box, FormBox, LabelBox, Seperator } from 'components/Layout'
 import { Textarea, Input } from 'components/Form'
 import { useApi } from 'src/apiHelpers'
 import {SubmitFormMsg, SubmitFormResponse} from 'pages/api/submitForm'
-import { useState } from 'react'
 import { Primary } from 'components/Button'
 import { AccentImg } from 'components/Images'
+import { useFormData } from 'src/hooks'
 
 export default ()=>{
-  let [state, setState] = useState({
+  let {state, form, reset} = useFormData({
     Name: "",
     Email: "",
     About: "",
@@ -30,14 +30,7 @@ export default ()=>{
       h('h1', "Thank You!"),
       h('p.big', `We'll get back to you soon! `),
     ]),
-    h(Primary, {onClick: ()=>setState({
-      Name: "",
-      Email: "",
-      About: "",
-      Structure: "",
-      Cost: "",
-      References: ""
-    })}, "Submit another idea")
+    h(Primary, {onClick: ()=>reset()}, "Submit another idea")
   ]) : h(Box, {ma: true, width: 640, gap:32}, [
     h(Box, [
       h('h1', "Propose a Club"),
@@ -53,16 +46,14 @@ export default ()=>{
           h('h3', "Your Name"),
           h(Input, {
             type: "text",
-            value: state.Name,
-            onChange: e=>setState({...state, Name: e.currentTarget.value})
+            ...form.Name,
           })
         ]),
         h(LabelBox, {gap:8}, [
           h('h3', "Your Email"),
           h(Input, {
             type: "email",
-            value: state.Email,
-            onChange: e=>setState({...state, Email: e.currentTarget.value})
+            ...form.Email
           })
         ]),
         h(LabelBox,{gap:8}, [
@@ -70,40 +61,28 @@ export default ()=>{
             h('h3', "What's the club about?" ),
             h('small',`In a few words, e.g. "Book club for GEB", or "Working group exploring the future of internet pedagogy"`),
           ]),
-          h(Textarea, {
-            value: state.About,
-            onChange: e=>setState({...state, About: e.currentTarget.value})
-          })
+          h(Textarea, form.About)
         ]),
         h(LabelBox,{gap:8}, [
           h('div', [
             h('h3', "What does the structure look like?" ),
             h('small',`In a few short paragraphs: what are the goals of the Club? How long is it and how frequently does it meet? What's the workload? Who's the ideal participant?`),
           ]),
-          h(Textarea, {
-            value: state.Structure,
-            onChange: e=>setState({...state, Structure: e.currentTarget.value})
-          })
+          h(Textarea, form.Structure)
         ]),
         h(LabelBox,{gap:8}, [
           h('div', [
             h('h3', "How much do you imagine it will cost?" ),
             h('small',`In USD; rough estimate fine for now. As a serious learning experience, the cost should be > $0! (Our pricing model here is the same as for courses: you set a price, Hyperlink takes a 20% platform fee, you keep 80%)`),
           ]),
-          h(Input, {
-            value: state.Cost,
-            onChange: e=>setState({...state, Cost: e.currentTarget.value})
-          })
+          h(Input, form.Cost)
         ]),
         h(LabelBox, {gap:8},[
           h('div',[
             h('h3', "Anything else we should check out? (Optional)"),
             h('small', "Feel free to share your website, Twitter, or other links that might help illustrate what you have in mind!"),
           ]),
-          h(Textarea, {
-            value: state.References,
-            onChange: e=>setState({...state, References: e.currentTarget.value})
-          })
+          h(Textarea, form.References)
         ]),
 
       ]),

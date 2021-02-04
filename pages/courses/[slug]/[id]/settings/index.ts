@@ -14,7 +14,7 @@ import { Info, Error, Select, Input, Textarea, CheckBox } from 'components/Form'
 import { Primary, Destructive, Secondary, BackButton } from 'components/Button'
 import {Discounts} from 'components/pages/courses/settings/Discounts'
 import ErrorPage from 'pages/404'
-import { useDebouncedEffect } from 'src/hooks'
+import { useDebouncedEffect, useFormData } from 'src/hooks'
 import { courseDataQuery, UpdateCourseMsg, UpdateCourseResponse } from 'pages/api/courses/[id]'
 import { CheckUsernameResult } from 'pages/api/get/[...item]'
 import { CreateCohortMsg, CreateCohortResponse } from 'pages/api/cohorts'
@@ -227,27 +227,19 @@ invite. The invite allows them enroll in any cohort and does not expire.`)
 }
 
 const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
-  let [formData, setFormData] = useState({
+  let {state, form, changed, reset} = useFormData({
     name: props.course.name,
     cohort_max_size: props.course.cohort_max_size,
     description: props.course.description,
     prerequisites: props.course.prerequisites,
     cost: props.course.cost,
     duration: props.course.duration
-  })
+  }, [props.course])
   let [status, callUpdateCourse] = useApi<UpdateCourseMsg, UpdateCourseResponse>([])
 
-  useEffect(()=>setFormData(props.course), [props])
-
-  let changed = props.course.duration !== formData.duration
-    || props.course.name !== formData.name
-    || props.course.cost !== formData.cost
-    || props.course.prerequisites !== formData.prerequisites
-    || props.course.description !== formData.description
-    || props.course.cohort_max_size !== formData.cohort_max_size
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    let res = await callUpdateCourse(`/api/courses/${props.course.id}`, {...formData})
+    let res = await callUpdateCourse(`/api/courses/${props.course.id}`, {...state})
     if(res.status === 200) props.mutate({...props.course, ...res.result})
   }
 
@@ -258,16 +250,14 @@ const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
       h(Input, {
         type: 'text',
         maxLength: 50,
-        value: formData.name,
-        onChange: e => setFormData({...formData, name: e.currentTarget.value})
+        ...form.name
       }),
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Cost (USD)'),
       h(Input, {
         type: 'number',
-        value: formData.cost,
-        onChange: e => setFormData({...formData, cost: parseInt(e.currentTarget.value)})
+        ...form.cost
       })
     ]),
     h(LabelBox, {gap:8}, [
@@ -278,36 +268,28 @@ const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
       h(Input, {
         type: 'number',
         required: true,
-        value: formData.cohort_max_size,
-        onChange: (e)=> setFormData({...formData, cohort_max_size: parseInt(e.currentTarget.value)})
+        ...form.cohort_max_size
       })
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Description'),
       h(Textarea, {
         maxLength: 200,
-        value: formData.description,
-        onChange: e => setFormData({...formData, description: e.currentTarget.value})
+        ...form.description
         }),
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Prerequisites'),
-      h(Textarea, {
-        value: formData.prerequisites,
-        onChange: e => setFormData({...formData, prerequisites: e.currentTarget.value})
-      })
+      h(Textarea, form.prerequisites)
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Duration'),
-      h(Input, {
-        value: formData.duration,
-        onChange: e => setFormData({...formData, duration: e.currentTarget.value})
-      })
+      h(Input, form.duration)
     ]),
     h(SubmitButtons, [
       h(Destructive, {disabled: !changed, onClick: (e)=>{
         e.preventDefault()
-        setFormData(props.course)
+        reset()
       }}, "Discard Changes"),
         h(Primary, {type: 'submit', disabled: !changed, status}, 'Save Changes')
     ])

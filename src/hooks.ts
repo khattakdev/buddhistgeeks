@@ -1,4 +1,5 @@
 import {useRef, useEffect, useState} from 'react'
+import { formHelper } from './utils';
 export const useDebouncedEffect = (callback:Function, delay:number, deps:any[])  => {
   const firstUpdate = useRef(true);
   useEffect(()=>{
@@ -28,4 +29,19 @@ export const useMediaQuery = (query: string) => {
     return ()=> mediaQuery.removeListener(listener)
   },[query])
   return match
+}
+
+export function useFormData<T extends {[key:string]: string | null | number | object | boolean}> (initialState:T, update:any[]=[]) {
+  let [state, setState] = useState(initialState)
+  useEffect(()=>{
+    setState(initialState)
+  }, update)
+  let form = formHelper(state, setState)
+  return {
+    state,
+    setState,
+    changed: Object.keys(initialState).reduce((acc, key)=>acc || initialState[key] !== state[key], false),
+    form,
+    reset:()=>setState(initialState)
+  } as const
 }
