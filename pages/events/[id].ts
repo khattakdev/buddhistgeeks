@@ -228,6 +228,7 @@ const JoinButton = (props:DetailsProps)=>{
   let form = formHelper(formState, setFormState)
 
   if(new Date(props.end_date) < new Date()) return h('p.big', "This event has concluded")
+  if(props.max_attendees && props.attendees >= props.max_attendees) return h('p.big', "Sorry, this event is full!")
 
   if(props.rsvpd || props.facilitating) return h('a', {href: props.location}, h(Primary, "Join Event"))
 

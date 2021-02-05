@@ -38,6 +38,10 @@ async function POSTEventRSVP(req:Request){
     }
   }})
   if(!event) return {status:404, result: "ERROR: no event found"} as const
+  if(event.max_attendees
+    && (event.events.people_in_events.length + event.events.no_account_rsvps.length) >= event.max_attendees) {
+    return {status: 400, result: "ERROR: event is full"} as const
+  }
 
   if(!user) {
     if(!msg?.email || !msg?.name) return {status:400, result:"ERROR: no user logged in"} as const
