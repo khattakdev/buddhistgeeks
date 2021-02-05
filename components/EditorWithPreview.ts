@@ -51,6 +51,6 @@ box-sizing: border-box;
 padding: 16px;
 font-size: 16px;
 height: ${props=>props.height ? props.height : 512}px;
-background-color:${colors.grey95};
+background-color:${colors.accentPeach};
 border-radius: 0 2px 2px 0;
 `
