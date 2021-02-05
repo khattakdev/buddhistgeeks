@@ -6,13 +6,15 @@ import { Box, Seperator } from 'components/Layout'
 import { prettyDate } from 'src/utils'
 import Link from 'next/link'
 
-export const EventCard = (props:{name: string, start_date: string, cost: number, id: number})=>{
+export const EventCard = (props:{name: string, start_date: string, end_date: string, cost: number, id: number})=>{
+  let start = new Date(props.start_date).toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric'})
+  let end = new Date(props.end_date).toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric', timeZoneName: "short"})
   return h(Link, {href:`/events/${props.id}`}, h(Container, [
     h(EventCardHeader),
     h(Box, {padding:16, style:{border: '1px solid', borderTop: 'none', borderRadius: '2px'}}, [
       h(Box, {gap:8},[
         h('h3', props.name),
-        h('span',  `${prettyDate(props.start_date)} @ ${(new Date(props.start_date)).toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric', timeZoneName: "short"})}`),
+        h('span',  `${prettyDate(props.start_date)} @ ${start} - ${end}`),
       ]),
       new Date(props.start_date) < new Date() ? null : h(Box, {gap:8},[
         h(Seperator),

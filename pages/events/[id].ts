@@ -204,15 +204,16 @@ type DetailsProps = {
 }
 const Details = (props:DetailsProps)=>{
   let start_date = new Date(props.start_date)
+  let end_date = new Date(props.end_date)
+
+  let start = start_date.toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric'})
+  let end = end_date.toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric', timeZoneName: "short"})
   return h(Box,{style:{alignSelf: 'center'}}, [
-      h(Box, {h:true}, [
-        h('div', {style:{alignSelf:'center'}}, [
-          h('h3',  `${prettyDate(props.start_date)}`),
-          h('h4.textSecondary', `${start_date.toLocaleDateString([], {weekday: 'short'})} @ ${start_date.toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric', timeZoneName: "short"})}`),
-        ]),
-        h(Seperator),
-        h('h1', props.cost !== 0 ? `$${props.cost}` : "FREE"),
-      ]),
+    h('div', {style:{alignSelf:'center'}}, [
+      h('h1', props.cost !== 0 ? `$${props.cost}` : "FREE"),
+      h('h3',  `${start_date.toLocaleDateString([], {weekday: 'short'})} ${prettyDate(props.start_date)}`),
+      h('h4.textSecondary', `@ ${start} - ${end}`),
+    ]),
     h(JoinButton, props),
     !(props.rsvpd) && props.max_attendees ? h('b', `${props.attendees}/${props.max_attendees} spots filled`) : null,
   ])
