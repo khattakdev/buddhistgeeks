@@ -38,7 +38,7 @@ export const EnrollButton:React.FC<{
     }
   }
 
-  return  h(Box, {h: true, style:{alignItems: 'center'}}, [
+  return  h(Box, {gap: 4, style:{alignItems: 'center'}}, [
     h(Modal, {display: error}, [
       h('h3', "Sorry, the discount code you're using is no longer valid")
     ]),
