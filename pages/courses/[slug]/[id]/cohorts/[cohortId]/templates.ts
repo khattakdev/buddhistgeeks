@@ -13,6 +13,7 @@ import { useApi } from 'src/apiHelpers'
 import { PostTopicMsg, PostTopicResponse } from 'pages/api/cohorts/[cohortId]/postTopic'
 import { Modal } from 'components/Modal'
 import { DISCOURSE_URL } from 'src/discourse'
+import { useFormData } from 'src/hooks'
 
 export default CohortTemplatesPages
 type Props = InferGetStaticPropsType<typeof getStaticProps>
@@ -61,21 +62,16 @@ function CohortTemplatesPages(props:Props) {
 }
 
 function TemplatePage(props: {template: Props['templates'][0]}) {
-  let [formState, setFormState] = useState(props.template)
+  let {form, changed, reset} = useFormData(props.template)
   let [post, setPost] = useState<number | undefined>()
   let [status, callPost] = useApi<PostTopicMsg, PostTopicResponse>([])
   let router = useRouter()
 
   let onSubmit = async (e:React.FormEvent)=>{
     e.preventDefault()
-    let res = await callPost(`/api/cohorts/${router.query.cohortId}/postTopic`, {title: formState.title, body: formState.content, tags:[]})
+    let res = await callPost(`/api/cohorts/${router.query.cohortId}/postTopic`, {title: form.title.value, body: form.content.value, tags:[]})
     if(res.status===200) setPost(res.result.topic.topic_id)
   }
-
-  let changed = props.template.title !== formState.title ||
-    props.template.content !== formState.content
-
-  console.log(router.query.id)
 
   return h(Fragment, [
     post && status === 'success' ? h(Modal, {display: !!post, onExit: ()=>{setPost(undefined)}}, h(Box, {gap:32},[
@@ -96,16 +92,15 @@ function TemplatePage(props: {template: Props['templates'][0]}) {
         h(Input, {
           type: 'text',
           name: 'title',
-          value: formState.title,
-          onChange:e=>setFormState({...formState, title: e.currentTarget.value})
+          ...form.title,
         })
       ]),
       h(LabelBox, [
         h('h4', "Body"),
-        h(EditorWithPreview, {value: formState.content, onChange: e=> setFormState({...formState, content: e.currentTarget.value})})
+        h(EditorWithPreview, form.content)
       ]),
       h(Box, {h:true, style:{justifySelf: 'right'}}, [
-        h(Secondary, {disabled: !changed, onClick:()=>setFormState(props.template)}, "Reset Template"),
+        h(Secondary, {disabled: !changed, onClick:()=>reset()}, "Reset Template"),
         h(Primary, {type: 'submit', status}, "Post to the forum"),
       ])
     ])

@@ -10,6 +10,7 @@ import { colors } from 'components/Tokens'
 import { callApi, useApi } from 'src/apiHelpers'
 import { UpdatePersonMsg, UpdatePersonResult } from 'pages/api/people/[id]'
 import { GETConnectStripeResult } from 'pages/api/user/connectStripe'
+import { useFormData } from 'src/hooks'
 
 const COPY = {
   usernameField: "Username",
@@ -39,22 +40,15 @@ const Settings = (props:{
   profile: Profile
   mutate: (p:Omit<Profile, 'stripe_connected_accounts'>)=>void
 }) => {
-  let [formData, setFormData] = useState(props.profile)
+  let {state, changed, form, reset} = useFormData(props.profile)
   let [status, callUpdatePerson] = useApi<UpdatePersonMsg, UpdatePersonResult>([])
-
-
-  const changed =
-    formData.bio !== props.profile.bio ||
-    formData.display_name !== props.profile.display_name ||
-    formData.link !== props.profile.link ||
-    formData.pronouns !== props.profile.pronouns
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if(!changed) return
-    let res = await callUpdatePerson(`/api/people/${props.user.username}`, {profile:formData})
+    let res = await callUpdatePerson(`/api/people/${props.user.username}`, {profile:state})
     if(res.status === 200) {
-      props.mutate(formData)
+      props.mutate(state)
     }
   }
   console.log(props.profile)
@@ -68,45 +62,26 @@ const Settings = (props:{
           h('h4', COPY.displayNameField),
           h(Description, COPY.displayNameDescription)
         ]),
-        h(Input,{
-          value: formData.display_name,
-          onChange: e=>{
-            e.preventDefault()
-            setFormData({...formData, display_name: e.currentTarget.value})
-          }
-        })
+        h(Input,form.display_name)
       ]),
       h(LabelBox, {gap:8}, [
         h('h4', COPY.pronounsField),
-        h(Input,{
-          value: formData.pronouns,
-          onChange: e=>{
-            e.preventDefault()
-            setFormData({...formData, pronouns: e.currentTarget.value})
-          }
-        })
+        h(Input, form.pronouns)
       ]),
       h(LabelBox, {gap:8}, [
         h(Box, {gap:4}, [
           h('h4', COPY.linkField),
           h(Description, COPY.linkDescription),
         ]),
-        h(Input, {
-          value: formData.link,
-          onChange: e=>setFormData({...formData, link: e.currentTarget.value})
-        })
+        h(Input, form.link)
       ]),
       h(LabelBox, {gap:8}, [
         h('h4', COPY.bioField),
-        h(Textarea, {
-          value: formData.bio,
-          onChange: e=>setFormData({...formData, bio: e.currentTarget.value})
-        })
+        h(Textarea, form.bio)
       ]),
     h(SubmitButtons, [
       h(Destructive, {disabled: !changed, onClick: ()=>{
-        if(!props.profile) return
-        setFormData(props.profile)
+        if(props.profile) reset()
       }}, "Discard Changes"),
       h(Primary, {status, type: 'submit', disabled: !changed}, 'Save Changes')
     ])

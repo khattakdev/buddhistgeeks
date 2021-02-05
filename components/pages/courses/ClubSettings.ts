@@ -1,5 +1,6 @@
 import h from 'react-hyperscript'
 import { useUserData, useCourseData, Course } from 'src/data'
+import {useFormData} from 'src/hooks'
 import { PageLoader } from 'components/Loader'
 import { Box, LabelBox, FormBox } from 'components/Layout'
 import { Tabs } from 'components/Tabs'
@@ -8,7 +9,6 @@ import {Discounts} from './settings/Discounts'
 import { prettyDate } from 'src/utils'
 import { Info, Input, Textarea } from 'components/Form'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import { useApi } from 'src/apiHelpers'
 import {UpdateCourseMsg, UpdateCourseResponse} from 'pages/api/courses/[id]'
 import { Destructive, Primary } from 'components/Button'
@@ -66,7 +66,7 @@ function Cohorts(props: {course:Course, mutate:(c:Course)=>void}) {
 }
 
 function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id: string, text: string}}) {
-  let [formData, setFormData] = useState({
+  let {state, form, changed, setState, reset} = useFormData({
     name: props.course.name,
     cohort_max_size: props.course.cohort_max_size,
     description: props.course.description,
@@ -75,20 +75,11 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
     cost: props.course.cost,
     duration: props.course.duration
   })
-  let [status, callUpdateCourse] = useApi<UpdateCourseMsg, UpdateCourseResponse>([formData])
-  useEffect(()=>setFormData(props.course), [props])
-
-  let changed = props.course.duration !== formData.duration
-    || props.course.name !== formData.name
-    || props.course.cost !== formData.cost
-    || props.course.card_image !== formData.card_image
-    || props.course.prerequisites !== formData.prerequisites
-    || props.course.description !== formData.description
-    || props.course.cohort_max_size !== formData.cohort_max_size
+  let [status, callUpdateCourse] = useApi<UpdateCourseMsg, UpdateCourseResponse>([state])
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    let res = await callUpdateCourse(`/api/courses/${props.course.id}`, {...formData})
+    let res = await callUpdateCourse(`/api/courses/${props.course.id}`, {...state})
     if(res.status === 200) props.mutate({...props.course, ...res.result})
   }
 
@@ -104,16 +95,14 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
       h(Input, {
         type: 'text',
         maxLength: 50,
-        value: formData.name,
-        onChange: e => setFormData({...formData, name: e.currentTarget.value})
+        ...form.name
       }),
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Description'),
       h(Textarea, {
         maxLength: 200,
-        value: formData.description,
-        onChange: e => setFormData({...formData, description: e.currentTarget.value})
+        ...form.description
       }),
     ]),
     h(Box,  [
@@ -122,9 +111,9 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
         h('small.textSecondary', "Select three emojis to describe your club! Repeats ok.")
       ]),
       h(IconPicker, {
-        icons: formData.card_image.split(','),
+        icons: state.card_image.split(','),
         setIcons: (icons:string[]) => {
-          setFormData({...formData, card_image: icons.join(',')})
+          setState({...state, card_image: icons.join(',')})
         }
       })
     ]),
@@ -132,8 +121,7 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
       h('h4', 'Cost (USD)'),
       h(Input, {
         type: 'number',
-        value: formData.cost,
-        onChange: e => setFormData({...formData, cost: parseInt(e.currentTarget.value)})
+        ...form.cost
       })
     ]),
     h(LabelBox, {gap:8}, [
@@ -144,23 +132,16 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
       h(Input, {
         type: 'number',
         required: true,
-        value: formData.cohort_max_size,
-        onChange: (e)=> setFormData({...formData, cohort_max_size: parseInt(e.currentTarget.value)})
+        ...form.cohort_max_size
       })
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Prerequisites'),
-      h(Textarea, {
-        value: formData.prerequisites,
-        onChange: e => setFormData({...formData, prerequisites: e.currentTarget.value})
-      })
+      h(Textarea, form.prerequisites)
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', 'Duration'),
-      h(Input, {
-        value: formData.duration,
-        onChange: e => setFormData({...formData, duration: e.currentTarget.value})
-      })
+      h(Input, form.duration)
     ]),
     h('div', {style:{
       backgroundColor: colors.appBackground,
@@ -173,7 +154,7 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
       h(Box, {h: true, style: {justifyContent: 'right'}}, [
         h(Destructive, {type: 'reset', disabled: !changed, onClick: (e)=>{
           e.preventDefault()
-          setFormData(props.course)
+          reset()
         }}, "Discard Changes"),
         h(Primary, {type: 'submit', disabled: !changed, status}, 'Save Changes')
       ])
