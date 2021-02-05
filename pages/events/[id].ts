@@ -162,7 +162,7 @@ const Event = (props: Extract<Props, {notFound: false}> & {facilitating: boolean
         h(Box, [
           h(Details, {
             ...props.standalone_events,
-            attendees: props.people_in_events.length,
+            attendees: props.people_in_events.length + props.no_account_rsvps.length,
             facilitating: props.facilitating,
             id: props.id,
             start_date: props.start_date,
