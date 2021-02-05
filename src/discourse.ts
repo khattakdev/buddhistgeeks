@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import querystring from 'querystring'
+import {PrismaClient} from '@prisma/client'
 import {DISCOURSE_URL} from 'src/constants'
 
 let headers = {
@@ -143,7 +144,11 @@ export async function updateGroup(id: number, name: string) {
     body: JSON.stringify({name})
   })
   if(result.status !== 200) console.log(await result.text())
-  else return true
+  else {
+    let prisma = new PrismaClient()
+    await prisma.discourse_groups.update({where:{id}, data:{name}})
+    return true
+  }
 }
 
 export async function updateCategory (id: string | number, options: {permissions?: {[key:string]: number}, name: string, slug?: string}) {
