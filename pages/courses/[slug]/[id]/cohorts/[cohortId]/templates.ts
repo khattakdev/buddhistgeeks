@@ -12,7 +12,7 @@ import { PageLoader } from 'components/Loader'
 import { useApi } from 'src/apiHelpers'
 import { PostTopicMsg, PostTopicResponse } from 'pages/api/cohorts/[cohortId]/postTopic'
 import { Modal } from 'components/Modal'
-import { DISCOURSE_URL } from 'src/discourse'
+import { DISCOURSE_URL } from 'src/constants'
 import { useFormData } from 'src/hooks'
 
 export default CohortTemplatesPages

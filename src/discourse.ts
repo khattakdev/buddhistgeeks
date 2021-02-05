@@ -1,12 +1,11 @@
 import crypto from 'crypto'
 import querystring from 'querystring'
+import {DISCOURSE_URL} from 'src/constants'
 
 let headers = {
       "Api-Key": process.env.DISCOURSE_API_KEY || '',
       "Api-Username": process.env.DISCOURSE_API_USERNAME || '',
     }
-
-export let DISCOURSE_URL = process.env.NEXT_PUBLIC_DISCOURSE_URL
 
 let fetchWithBackoff = async (url: Parameters<typeof fetch>[0], options:Parameters<typeof fetch>[1], exponent: number = 1):ReturnType<typeof fetch> => {
   let result = await fetch(url, options)

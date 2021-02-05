@@ -15,7 +15,7 @@ import Text from 'components/Text'
 import {colors} from 'components/Tokens'
 import { useState } from 'react';
 import { Info } from 'components/Form';
-import { DISCOURSE_URL } from 'src/discourse';
+import { DISCOURSE_URL } from 'src/constants';
 
 export function ClubPage(props:{
   cohort:Cohort,

@@ -4,7 +4,8 @@ import { ResultType, APIHandler, Request } from "src/apiHelpers"
 import {StripePaymentMetaData, stripe} from 'src/stripe'
 import { sendCohortEnrollmentEmail, sendEnrollNotificationEmaill, sendUnenrollEmail } from 'emails'
 import { getToken } from "src/token";
-import { addMember, DISCOURSE_URL, getTaggedPost } from "src/discourse";
+import { addMember, getTaggedPost } from "src/discourse";
+import {DISCOURSE_URL} from 'src/constants'
 import { prettyDate } from "src/utils"
 
 let prisma = new PrismaClient()

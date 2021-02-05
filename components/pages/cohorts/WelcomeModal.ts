@@ -7,7 +7,7 @@ import { prettyDate } from 'src/utils'
 import { Primary, Secondary } from 'components/Button'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { DISCOURSE_URL } from 'src/discourse'
+import { DISCOURSE_URL } from 'src/constants'
 
 export const WelcomeModal = (props: {display:boolean, cohort:Cohort} ) => {
   let router = useRouter()

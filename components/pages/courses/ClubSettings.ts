@@ -14,7 +14,7 @@ import {UpdateCourseMsg, UpdateCourseResponse} from 'pages/api/courses/[id]'
 import { Destructive, Primary } from 'components/Button'
 import { IconPicker } from 'components/IconPicker'
 import {colors} from 'components/Tokens'
-import { DISCOURSE_URL } from 'src/discourse'
+import { DISCOURSE_URL } from 'src/constants'
 
 export function ClubSettings(props: {course: Course, curriculum: {id: string, text: string}}) {
   let {data: user} = useUserData()

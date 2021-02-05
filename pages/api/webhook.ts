@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse} from 'next'
 import Stripe from 'stripe'
 import {PrismaClient} from '@prisma/client'
-import { getUsername, addMember, getTaggedPost, DISCOURSE_URL} from 'src/discourse'
+import { getUsername, addMember, getTaggedPost, } from 'src/discourse'
+import {DISCOURSE_URL} from 'src/constants'
 import { sendCohortEnrollmentEmail, sendEnrollNotificationEmaill, sendEventRSVPEmail } from 'emails';
 import { prettyDate } from '../../src/utils';
 import { StripePaymentMetaData } from 'src/stripe';

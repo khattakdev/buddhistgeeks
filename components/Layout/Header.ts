@@ -15,7 +15,7 @@ import { Modal } from '../Modal'
 import { useApi } from '../../src/apiHelpers'
 import { FeedbackMsg, FeedbackResult } from '../../pages/api/feedback'
 
-import {DISCOURSE_URL} from 'src/discourse'
+import {DISCOURSE_URL} from 'src/constants'
 
 const COPY = {
   feedbackTitle: "Tell us what's on your mind!",

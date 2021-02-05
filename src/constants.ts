@@ -1,0 +1,1 @@
+export let DISCOURSE_URL = process.env.NEXT_PUBLIC_DISCOURSE_URL

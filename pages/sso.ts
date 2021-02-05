@@ -5,7 +5,8 @@ import {useRouter} from 'next/router'
 import { GetServerSideProps } from 'next'
 
 import {getToken} from 'src/token'
-import { DISCOURSE_URL, makeSSOPayload } from 'src/discourse'
+import {  makeSSOPayload } from 'src/discourse'
+import {DISCOURSE_URL} from 'src/constants'
 
 type Props = {error:boolean}
 const SSO = ({error}:Props) => {
