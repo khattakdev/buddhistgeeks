@@ -4,12 +4,16 @@ import { getToken } from "src/token"
 import { sendWatchingNotificationEmail } from "emails"
 import { prettyDate } from "src/utils"
 import produce from "immer"
+import { updateGroup } from "src/discourse"
 
 let prisma = new PrismaClient()
 export type UpdateCohortMsg = {
   data: Partial<{
     completed: true
     live: boolean
+    start_date: string,
+    name: string,
+    description: string
   }>
 }
 
@@ -29,11 +33,13 @@ async function updateCohort(req:Request) {
   let cohort = await prisma.course_cohorts.findOne({
     where:{id:cohortId},
     select: {
+      name: true,
       facilitator: true,
       completed: true,
       live: true,
       start_date: true,
       course: true,
+      discourse_groups: true,
       courses: {
         select: {
           name: true,
@@ -48,6 +54,11 @@ async function updateCohort(req:Request) {
   let completed
   if(msg.data.completed && !cohort.completed) {
     completed = (new Date()).toISOString()
+  }
+
+  if(msg.data.name && cohort.name !== msg.data.name) {
+    console.log(cohort.courses.slug+'-'+msg.data.name)
+    await updateGroup(cohort.discourse_groups.id, cohort.courses.slug+'-'+msg.data.name)
   }
 
   if(cohort.live === false && msg.data.live === true) {
@@ -71,11 +82,15 @@ async function updateCohort(req:Request) {
     }))
   }
 
+
   let newData = await prisma.course_cohorts.update({
     where: {id: cohortId},
     data: {
       live: msg.data.live,
-      completed
+      completed,
+      name: msg.data.name,
+      start_date: msg.data.start_date,
+      description: msg.data.description
     }
   })
   if(!newData) return {status: 404, result: `No cohort with id ${cohortId} found`} as const
@@ -86,6 +101,7 @@ export const cohortDataQuery = async (id: number, userId?: string)=>{
   let data = await prisma.course_cohorts.findOne({
     where: {id},
     select: {
+      description: true,
       name: true,
       category_id: true,
       start_date: true,

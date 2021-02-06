@@ -10,7 +10,7 @@ import CourseDetails from 'components/Course/Enroll'
 import { EnrollButton } from 'components/Course/EnrollButton';
 import { TwoColumn, Box, Seperator, Sidebar, WhiteContainer} from 'components/Layout'
 import { VerticalTabs, StickyWrapper } from 'components/Tabs'
-import { Primary, Destructive, DestructiveSmallButton, Secondary, BackButton, LinkButton } from 'components/Button'
+import { Primary, Destructive, DestructiveSmallButton, Secondary, LinkButton } from 'components/Button'
 import Loader, { PageLoader } from 'components/Loader'
 import { CheckBox, Info, Input } from 'components/Form'
 import { Modal } from 'components/Modal'
@@ -138,19 +138,33 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
       h(TwoColumn, [
         h('div', {style: {gridColumn: 1}}, [
           h(Box, {gap: 8}, [
-            h(BackButton, {href: "/courses/[slug]/[id]", as: `/courses/${cohort.courses.slug}/${cohort.courses.id}`}, 'Course Details'),
-            h('h1', cohort?.courses.name),
-            h('h2.textSecondary', 'Cohort '+cohort?.name),
+            isFacilitator ? h(Link, {href:window.location.pathname + '/settings'}, h('a', {}, h(Primary, "Cohort Settings"))) : null,
+            h('h1', 'Cohort #'+cohort?.name),
+            h(Link,{
+              href:`/courses/${cohort.courses.slug}/${cohort.courses.id}`
+            } ,h('a.notBlue', {}, h('h3.textSecondary', cohort?.courses.name))),
           ]),
         ]),
         Tabs[selectedTab ? selectedTab : tabKeys[0]],
         h(Sidebar, {} , [
           h(StickyWrapper, [
             h(Box, {gap: 32}, [
+              h(Box, [
+                h('h3', "Information"),
+                h(VerticalTabs, {
+                  selected: selectedTab && Tabs[selectedTab] ? selectedTab : tabKeys[0],
+                  tabs: tabKeys,
+                  onChange: (tab)=>{
+                    let route = new URL(window.location.href)
+                    route.searchParams.set('tab', tab)
+                    router.replace(route, undefined, {shallow: true})
+                  }
+                })
+              ]),
               inCohort || isFacilitator || cohort.completed ? h(Box, {}, [
                 !inCohort && !isFacilitator ? null : h(Box, [
                   h('a', {href: `${DISCOURSE_URL}/session/sso?return_path=/c/${cohort.category_id}`}
-                    , h(Primary, 'Go to the forum')),
+                    , h(Secondary, 'The Forum')),
                   !isFacilitator ? null : h(Link, {
                     href: "/courses/[slug]/[id]/cohorts/[cohortId]/templates",
                     as: `/courses/${cohort.courses.slug}/${cohort.courses.id}/cohorts/${cohort.id}/templates`
@@ -165,18 +179,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
                   max_size: course.cohort_max_size,
                   learners: cohort.people_in_cohorts.length,
                   invited: !course.invite_only || invited}, "Join this cohort"),
-              h(Box, [
-                h('h3', "Information"),
-                h(VerticalTabs, {
-                  selected: selectedTab && Tabs[selectedTab] ? selectedTab : tabKeys[0],
-                  tabs: tabKeys,
-                  onChange: (tab)=>{
-                    let route = new URL(window.location.href)
-                    route.searchParams.set('tab', tab)
-                    router.replace(route, undefined, {shallow: true})
-                  }
-                })
-              ])
+
             ])
           ])
         ])
