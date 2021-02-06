@@ -31,6 +31,7 @@ model course_cohorts {
   name              String
   id                Int                 @id @default(autoincrement())
   cohort_group      Int
+  description       String
   discourse_groups  discourse_groups    @relation(fields: [cohort_group], references: [id])
   courses           courses             @relation(fields: [course], references: [id])
   people            people              @relation(fields: [facilitator], references: [id])

@@ -111,6 +111,7 @@ async function handler (req: Request) {
     data: {
       name: course.course_cohorts.length.toString(),
       category_id: category.id,
+      description: '',
       discourse_groups:{
         create:{
           id: group.basic_group.id,
