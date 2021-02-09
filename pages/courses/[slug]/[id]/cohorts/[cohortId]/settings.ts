@@ -52,7 +52,15 @@ function CohortDetails(props:{cohort:Cohort, mutate:(c:Cohort)=>void}) {
 
   const onSubmit = async (e:React.FormEvent)=>{
     e.preventDefault()
-    let result = await callUpdateCohort(`/api/cohorts/${props.cohort.id}`, {data: state})
+
+    let d1 = state.start_date.split('-').map(x=>parseInt(x))
+    let t1 = state.start_time.split(':').map(x=>parseInt(x))
+    let start_date = (new Date(d1[0], d1[1] -1, d1[2], t1[0], t1[1])).toISOString()
+    let result = await callUpdateCohort(`/api/cohorts/${props.cohort.id}`, {data: {
+      name: state.name,
+      description: state.description,
+      start_date
+    }})
     if(result.status === 200) {
       props.mutate({...props.cohort, ...result.result})
     }
