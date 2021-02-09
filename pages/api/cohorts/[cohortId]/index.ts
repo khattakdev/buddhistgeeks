@@ -4,7 +4,7 @@ import { getToken } from "src/token"
 import { sendWatchingNotificationEmail } from "emails"
 import { prettyDate } from "src/utils"
 import produce from "immer"
-import { updateGroup } from "src/discourse"
+import { updateCategory, updateGroup } from "src/discourse"
 
 let prisma = new PrismaClient()
 export type UpdateCohortMsg = {
@@ -39,6 +39,7 @@ async function updateCohort(req:Request) {
       live: true,
       start_date: true,
       course: true,
+      category_id: true,
       discourse_groups: true,
       courses: {
         select: {
@@ -57,8 +58,10 @@ async function updateCohort(req:Request) {
   }
 
   if(msg.data.name && cohort.name !== msg.data.name) {
-    console.log(cohort.courses.slug+'-'+msg.data.name)
-    await updateGroup(cohort.discourse_groups.id, cohort.courses.slug+'-'+msg.data.name)
+    await Promise.all([
+      updateGroup(cohort.discourse_groups.id, cohort.courses.slug+'-'+msg.data.name),
+      updateCategory(cohort.category_id, {name: cohort.courses.slug+'-'+msg.data.name})
+    ])
   }
 
   if(cohort.live === false && msg.data.live === true) {
