@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import h from 'react-hyperscript'
+import { forwardRef } from 'react'
 import {colors} from './Tokens'
 import { Box } from './Layout'
 import { useState } from 'react'
@@ -101,8 +102,8 @@ outline: none;
 `: ''}
 `
 
-export const Input = (props: Parameters<typeof StyledInput>[0]) => {
-  if(!props.maxLength || typeof props.value !== 'string') return h(StyledInput, props)
+export const Input = forwardRef<HTMLInputElement, Parameters<typeof StyledInput>[0]>((props, ref) => {
+  if(!props.maxLength || typeof props.value !== 'string') return h(StyledInput, {...props, ref})
 
   let placeholder: string | undefined
   if(props.type === 'date') placeholder = 'yyyy-mm-dd'
@@ -111,11 +112,12 @@ export const Input = (props: Parameters<typeof StyledInput>[0]) => {
   return h(Box, {gap: 4}, [
     h(StyledInput, {
       ...props,
+      ref,
       placeholder: placeholder || props.placeholder
     }),
     h('small.textSecondary', {style:{justifySelf: 'right'}}, `${props.value.length}/${props.maxLength}`)
   ])
-}
+})
 
 const StyledTextarea = styled('textarea')`
 resize: vertical;
@@ -130,13 +132,13 @@ font-family: Lato;
 border-radius: 2px;
 `
 
-export const Textarea = (props: Parameters<typeof StyledTextarea>[0]) => {
-  if(!props.maxLength || typeof props.value !== 'string') return h(StyledTextarea, props)
+export const Textarea = forwardRef<HTMLTextAreaElement, Parameters<typeof StyledTextarea>[0]>((props, ref ) => {
+  if(!props.maxLength || typeof props.value !== 'string') return h(StyledTextarea, {...props, ref})
   return h(Box, {gap:4}, [
-    h(StyledTextarea, props),
+    h(StyledTextarea, {...props, ref}),
     h('small.textSecondary', {style:{justifySelf: 'right'}}, `${props.value.length}/${props.maxLength}`)
   ])
-}
+})
 
 export const Error = styled('div')`
 background-color: ${colors.backgroundRed};
