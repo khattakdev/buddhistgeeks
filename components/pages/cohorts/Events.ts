@@ -1,6 +1,6 @@
 import h from 'react-hyperscript'
 import { getTimeBetween } from 'src/utils'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Box, FormBox } from 'components/Layout'
 import styled from '@emotion/styled'
 import Link from 'next/link'
@@ -13,6 +13,7 @@ import { UpdateEventMsg, UpdateEventResult, DeleteEventResult } from 'pages/api/
 import Text from 'components/Text'
 import { Cohort, useUserData } from 'src/data'
 import { Pill } from 'components/Pill'
+import { useFormData } from 'src/hooks'
 
 export const CohortEvents = (props: {
   facilitating: boolean,
@@ -91,15 +92,15 @@ const Event = (props: {
   let end_date = new Date(event.events.end_date)
   let past = end_date < new Date()
 
-  let [formState, setFormState] = useState({
+  let {state, setState} = useFormData({
     everyone: !event.everyone,
     name: event.events.name,
     location: event.events.location || '',
     description: event.events.description,
-    start_date: `${start_date.getFullYear()}-${start_date.getMonth()}-${start_date.getDate()}`,
-    start_time: `${start_date.getHours()}:${start_date.getMinutes()}`,
-    end_time: `${end_date.getHours()}:${end_date.getMinutes()}`,
-    people: props.event.events.people_in_events.map(p=>p.people.username)
+    start_date: `${start_date.getFullYear()}-${('0'+(start_date.getMonth()+1)).slice(-2)}-${('0'+start_date.getDate()).slice(-2)}`,
+    start_time: start_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
+    end_time: end_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
+    people: event.events.people_in_events.map(p=>p.people.username)
   })
 
   let[status, callUpdateEvent] = useApi<UpdateEventMsg, UpdateEventResult>([props], async (event)=>{
@@ -111,20 +112,10 @@ const Event = (props: {
     setEditing(false)
     props.mutateDelete()
   })
-  useEffect(()=>setFormState({
-    everyone: !event.everyone,
-    name: event.events.name,
-    location: event.events.location || '',
-    description: event.events.description,
-    start_date: `${start_date.getFullYear()}-${('0'+(start_date.getMonth()+1)).slice(-2)}-${('0'+start_date.getDate()).slice(-2)}`,
-    start_time: start_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
-    end_time: end_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
-    people: event.events.people_in_events.map(p=>p.people.username)
-  }),[event])
 
   const onSubmit = (e: React.FormEvent)=>{
     e.preventDefault()
-    let event = formState
+    let event = state
 
     let d1 = event.start_date.split('-').map(x=>parseInt(x))
     let t1 = event.start_time.split(':').map(x=>parseInt(x))
@@ -150,7 +141,7 @@ const Event = (props: {
     h(Dot, {selected: expanded, onClick: ()=>setExpanded(event.events.description === '' ? false : !expanded), past}),
     editting
       ? h(FormBox, {onSubmit}, [
-      h(EventForm, {onChange: setFormState, state:formState, people: props.people}),
+      h(EventForm, {onChange: setState, state, people: props.people}),
       h(Box, {h: true, style:{justifySelf: "right", alignItems: "center"}}, [
         h(LinkButton, {textSecondary: true, onClick: ()=>setEditing(false)}, "cancel"),
         h(Destructive, {status: deleteStatus, onClick: (e)=>{
