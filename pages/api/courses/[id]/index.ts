@@ -35,7 +35,7 @@ async function updateCourse(req: Request) {
   if(Number.isNaN(courseId)) return {status: 400, result: "ERROR: Course id is not a number"} as const
   let user = getToken(req)
   if(!user) return {status: 403, result: "ERROR: No user logged in"} as const
-  let course = await prisma.courses.findOne({
+  let course = await prisma.courses.findUnique({
     where:{id: courseId},
     select: {
       status: true,
@@ -86,14 +86,14 @@ async function updateCourse(req: Request) {
       prerequisites: msg.prerequisites,
       description: msg.description,
       cost: msg.cost,
-      name: msg.name
+      name: msg.name,
     }
   })
 
   return {status: 200, result: newData} as const
 }
 
-export const courseDataQuery = (id:number) => prisma.courses.findOne({
+export const courseDataQuery = (id:number) => prisma.courses.findUnique({
   where: {id},
   include: {
     course_maintainers: {

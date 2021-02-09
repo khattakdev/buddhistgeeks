@@ -12,7 +12,7 @@ async function GETConnectStripe(req:Request){
   let user = getToken(req)
   let country = req.query.country as string
   if(!user) return {status:400, result: "ERROR: no user logged in"} as const
-  let user_data = await prisma.people.findOne({where:{id:user.id}, select:{
+  let user_data = await prisma.people.findUnique({where:{id:user.id}, select:{
     course_maintainers:true,
     stripe_connected_accounts: true
   }})

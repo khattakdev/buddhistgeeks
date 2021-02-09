@@ -21,7 +21,7 @@ async function createTemplate(req:Request) {
   let courseID = parseInt(req.query.id as string)
   if(Number.isNaN(courseID)) return {status: 400, result: "ERROR: Course id is not a number"} as const
 
-  let course = await prisma.courses.findOne({where: {id: courseID}, select: {
+  let course = await prisma.courses.findUnique({where: {id: courseID}, select: {
     course_maintainers: true,
   }})
   if(!course) return {status:404, result: "ERROR: course " + courseID + " not found"} as const
@@ -52,7 +52,7 @@ async function getTemplates(req:Request) {
 
   let user = getToken(req)
   if(!user) return {status:400, result: "ERROR: No user logged in!"} as const
-  let course = await prisma.courses.findOne({where: {id: courseID}, select: {
+  let course = await prisma.courses.findUnique({where: {id: courseID}, select: {
     course_templates: true,
     course_maintainers: true,
   }})

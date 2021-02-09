@@ -21,7 +21,7 @@ async function handler (req: Request) {
 
   let user = getToken(req)
   if(!user) return {status: 403, result: "Error: no user logged in"} as const
-  let isUserMainter = await prisma.course_maintainers.findOne({where: {
+  let isUserMainter = await prisma.course_maintainers.findUnique({where: {
     course_maintainer: {
       course: msg.courseId,
       maintainer: user.id
@@ -31,7 +31,7 @@ async function handler (req: Request) {
     return {status: 403, result: "ERROR: user is not maintainer of course"} as const
   }
 
-  let course = await prisma.courses.findOne({
+  let course = await prisma.courses.findUnique({
     where: {id: msg.courseId},
     select: {
       slug: true,

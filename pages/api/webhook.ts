@@ -44,11 +44,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     switch(metadata.type) {
         case 'cohort': {
           let cohortId = parseInt(metadata.cohortId)
-          let person = await prisma.people.findOne({where: {id: metadata.userId}})
+          let person = await prisma.people.findUnique({where: {id: metadata.userId}})
           if(!person) return {status: 400, result: "ERROR: cannot find user with id: " + metadata.userId} as const
 
           let [cohort, discount] = await Promise.all([
-            prisma.course_cohorts.findOne({
+            prisma.course_cohorts.findUnique({
               where: {id: cohortId},
               include: {
                 discourse_groups: true,
@@ -68,7 +68,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }
               }
             }),
-            metadata.discount ? prisma.course_discounts.findOne({where:{code:metadata.discount}}) : null
+            metadata.discount ? prisma.course_discounts.findUnique({where:{code:metadata.discount}}) : null
           ])
 
           if(!cohort) return {status: 400, result: "ERROR: no cohort with id: " + metadata.cohortId}
@@ -119,8 +119,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         case 'event': {
           let eventId = parseInt(metadata.eventId)
           let [person, event] = await Promise.all([
-            prisma.people.findOne({where: {id: metadata.userId}}),
-            prisma.standalone_events.findOne({where: {event: eventId}, select:{events: true}})
+            prisma.people.findUnique({where: {id: metadata.userId}}),
+            prisma.standalone_events.findUnique({where: {event: eventId}, select:{events: true}})
           ])
           if(!person) return {status: 400, result: "ERROR: cannot find user with id: " + metadata.userId} as const
           if(!event) return {status:400, result: "ERROR: cannot find event with id: "+eventId}

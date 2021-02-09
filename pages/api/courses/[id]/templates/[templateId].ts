@@ -21,7 +21,7 @@ async function deleteTemplate(req: Request) {
   let user = getToken(req)
   if(!user) return {status: 401, result: "ERROR: no user logged in"} as const
 
-  let course_maintainer = await prisma.course_maintainers.findOne({where: {
+  let course_maintainer = await prisma.course_maintainers.findUnique({where: {
     course_maintainer: {
       course: courseId,
       maintainer: user.id
@@ -51,7 +51,7 @@ async function updateTemplate(req: Request) {
   let user = getToken(req)
   if(!user) return {status: 401, result: "ERROR: no user logged in"} as const
 
-  let course_maintainer = await prisma.course_maintainers.findOne({where: {
+  let course_maintainer = await prisma.course_maintainers.findUnique({where: {
     course_maintainer: {
       course: courseId,
       maintainer: user.id
@@ -59,7 +59,7 @@ async function updateTemplate(req: Request) {
   }})
 
   if(!course_maintainer) return {status: 401, result: "ERROR: user is not maintainer of this course"} as const
-  let template = await prisma.course_templates.findOne({where: {
+  let template = await prisma.course_templates.findUnique({where: {
     name_course: {
       name: templateId,
       course: courseId

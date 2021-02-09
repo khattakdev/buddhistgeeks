@@ -21,7 +21,7 @@ async function POSTEventRSVP(req:Request){
 
   let eventId = parseInt(req.query.id as string)
   if(Number.isNaN(eventId)) return {status: 400, result: "ERROR: event id is not a number"} as const
-  let event = await prisma.standalone_events.findOne({where:{event: eventId}, select:{
+  let event = await prisma.standalone_events.findUnique({where:{event: eventId}, select:{
     cost: true,
     max_attendees: true,
     events:{

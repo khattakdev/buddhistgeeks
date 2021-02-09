@@ -50,7 +50,7 @@ async function createEvent(req:Request) {
 
   switch(msg.type){
       case 'cohort': {
-        let cohort = await prisma.course_cohorts.findOne({where: {id: msg.cohort}, select:{facilitator: true, people: {select:{username: true}},people_in_cohorts: {select:{people: {select: {username: true}}}}}})
+        let cohort = await prisma.course_cohorts.findUnique({where: {id: msg.cohort}, select:{facilitator: true, people: {select:{username: true}},people_in_cohorts: {select:{people: {select: {username: true}}}}}})
         if(!cohort) return {status: 404, result: `ERROR: no cohort with id ${msg.cohort} found`} as const
 
         if(cohort.facilitator !== user.id &&

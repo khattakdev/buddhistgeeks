@@ -151,7 +151,7 @@ const createUser = async (input:{email:string, password_hash:string, username: s
 }
 
 const getActivationKey = async (hash: string)=> {
-  return prisma.activation_keys.findOne({
+  return prisma.activation_keys.findUnique({
     where: {key_hash: hash},
     select: {username: true, email: true, password_hash: true, created_time: true, newsletter: true}
   })

@@ -16,7 +16,7 @@ async function getDiscounts(req:Request) {
   if(Number.isNaN(courseID)) return {status: 400, result: "ERROR: Course id is not a number"} as const
 
   let [maintainer, discounts] = await Promise.all([
-    prisma.course_maintainers.findOne({where:{course_maintainer:{course: courseID, maintainer: user.id}}}),
+    prisma.course_maintainers.findUnique({where:{course_maintainer:{course: courseID, maintainer: user.id}}}),
     prisma.course_discounts.findMany({where: {course: courseID, deleted: false}})
   ])
 
@@ -44,7 +44,7 @@ async function createDiscount(req: Request) {
 
   let courseID = parseInt(req.query.id as string)
   if(Number.isNaN(courseID)) return {status: 400, result: "ERROR: Course id is not a number"} as const
-  let maintainer = await prisma.course_maintainers.findOne({where:{course_maintainer:{course: courseID, maintainer: user.id}}})
+  let maintainer = await prisma.course_maintainers.findUnique({where:{course_maintainer:{course: courseID, maintainer: user.id}}})
 
   if(!maintainer) return {status:401, result: "ERROR: user is not a maintainer of this course"} as const
 

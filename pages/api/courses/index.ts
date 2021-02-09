@@ -58,7 +58,7 @@ async function createCourse(req: Request) {
   let user = getToken(req)
   if(!user) return {status: 403, result: "ERROR: no user logged in"} as const
 
-  let isAdmin = prisma.admins.findOne({where: {person: user.id}})
+  let isAdmin = prisma.admins.findUnique({where: {person: user.id}})
   if(!isAdmin) return {status: 403, result: "ERROR: user is not an admin"} as const
 
   let maintainers = await prisma.people.findMany({

@@ -7,7 +7,7 @@ export default APIHandler({GET: getDiscount, DELETE: deleteDiscount})
 export type GetDiscountResult = ResultType<typeof getDiscount>
 export type DeleteDiscountResult = ResultType<typeof deleteDiscount>
 
-export const getDiscountQuery = (code: string) => prisma.course_discounts.findOne({
+export const getDiscountQuery = (code: string) => prisma.course_discounts.findUnique({
     where: {code},
     include: {
       courses: {
@@ -38,7 +38,7 @@ async function deleteDiscount(req:Request){
   let user = getToken(req)
   if(!user) return {status:401, result:"ERROR: no user logged in"}
   if(!code) return {status: 400, result: "ERROR: no discount code given"} as const
-  let discount = await prisma.course_discounts.findOne({where:{code}, select:{
+  let discount = await prisma.course_discounts.findUnique({where:{code}, select:{
     people_in_cohorts:{
       select: {
         discount_used: true

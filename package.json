@@ -33,6 +33,7 @@
     "immer": "^8.0.0",
     "next": "^10.0.2",
     "postmark": "^2.7.0",
+    "prisma": "^2.16.0",
     "raw-loader": "^4.0.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
@@ -47,8 +48,7 @@
   },
   "devDependencies": {
     "@now/node": "^1.8.5",
-    "@prisma/cli": "^2.11.0",
-    "@prisma/client": "^2.11.0",
+    "@prisma/client": "^2.16.0",
     "@sentry/browser": "^5.27.4",
     "@sentry/node": "^5.27.4",
     "@types/bcryptjs": "^2.4.2",

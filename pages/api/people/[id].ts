@@ -74,7 +74,7 @@ async function updatePerson(req: Request) {
 
 async function validateLogin(email: string, password: string):Promise<boolean> {
   try {
-    let person = await prisma.people.findOne({where:{email}})
+    let person = await prisma.people.findUnique({where:{email}})
     if(!person) return false
     return await bcrypt.compare(password, person.password_hash)
   } catch (e) {
@@ -89,7 +89,7 @@ async function updatePassword(email: string, newPassword: string) {
 let prisma = new PrismaClient()
 
 export const profileDataQuery = (username: string, loggedIn: boolean)=>{
-  return prisma.people.findOne({
+  return prisma.people.findUnique({
     where: {username: username},
     select: {
       stripe_connected_accounts: loggedIn,

@@ -30,7 +30,7 @@ async function updateCohort(req:Request) {
 
   let user = getToken(req)
   if(!user) return {status: 400, result: "ERROR: no user logged in'"} as const
-  let cohort = await prisma.course_cohorts.findOne({
+  let cohort = await prisma.course_cohorts.findUnique({
     where:{id:cohortId},
     select: {
       name: true,
@@ -98,7 +98,7 @@ async function updateCohort(req:Request) {
 }
 
 export const cohortDataQuery = async (id: number, userId?: string)=>{
-  let data = await prisma.course_cohorts.findOne({
+  let data = await prisma.course_cohorts.findUnique({
     where: {id},
     select: {
       description: true,

@@ -23,7 +23,7 @@ async function inviteToCourse(req:Request) {
     name = person.display_name || ''
   }
 
-  let courseData = await prisma.courses.findOne({where: {id: courseID}, select:{name: true, slug:true}})
+  let courseData = await prisma.courses.findUnique({where: {id: courseID}, select:{name: true, slug:true}})
   if(!courseData) return {status:404, result: `ERROR: no course found with id ${courseID}`}
 
   await prisma.course_invites.create({data: {

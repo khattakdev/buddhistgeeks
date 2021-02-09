@@ -38,7 +38,7 @@ async function enroll (req: Request) {
   catch(e) {return {status:400, result:e.toString()} as const }
 
   let [cohort, person, discount] = await Promise.all([
-    prisma.course_cohorts.findOne({
+    prisma.course_cohorts.findUnique({
       where: {id: cohortId},
       include: {
         discourse_groups: true,
@@ -62,8 +62,8 @@ async function enroll (req: Request) {
         }
       }
     }),
-    prisma.people.findOne({where:{id:user.id}}),
-    msg.discount ? prisma.course_discounts.findOne({where: {code: msg.discount}}) : null
+    prisma.people.findUnique({where:{id:user.id}}),
+    msg.discount ? prisma.course_discounts.findUnique({where: {code: msg.discount}}) : null
   ])
 
   if(!cohort || cohort.courses.cost === undefined) return {status: 400, result: "Error: no cohort with id " + cohortId + " found"}  as const
@@ -160,7 +160,7 @@ async function unenroll (req: Request) {
   catch(e) {return {status:400, result:e.toString()} as const }
 
   let [cohort] = await Promise.all([
-    prisma.course_cohorts.findOne({
+    prisma.course_cohorts.findUnique({
       where: {id: cohortId},
       include: {
         courses:{

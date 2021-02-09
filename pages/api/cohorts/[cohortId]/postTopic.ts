@@ -23,7 +23,7 @@ async function postTopic(req:Request) {
   let user = getToken(req)
   if(!user) return {status: 400, result: "ERROR: no user logged in"} as const
 
-  let cohort = await prisma.course_cohorts.findOne({
+  let cohort = await prisma.course_cohorts.findUnique({
     where: {id: cohortId},
     select:{
       facilitator: true,

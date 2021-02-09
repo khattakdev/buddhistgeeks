@@ -81,7 +81,7 @@ async function resetPassword (req:Request) {
 }
 
 async function getResetKey(hash: string) {
-  return prisma.password_reset_keys.findOne({where:{key_hash:hash}})
+  return prisma.password_reset_keys.findUnique({where:{key_hash:hash}})
 }
 
 
@@ -96,7 +96,7 @@ const createResetKey = async (email: string) => {
 }
 
 const findUser = async (email:string) => {
-  return await prisma.people.findOne({where: {email}})
+  return await prisma.people.findUnique({where: {email}})
 }
 
 
