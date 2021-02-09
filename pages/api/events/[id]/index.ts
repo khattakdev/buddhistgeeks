@@ -102,7 +102,7 @@ async function updateEvent(req:Request) {
           include: {
             events: {
               include: {
-                people_in_events: {select:{people:{select:{username: true, display_name: true}}}},
+                people_in_events: {select:{people:{select:{username: true, display_name: true, id: true}}}},
               }
             }
           },

@@ -116,7 +116,7 @@ export const cohortDataQuery = async (id: number, userId?: string)=>{
         include: {
           events: {
             include: {
-              people_in_events: {select:{people:{select:{username: true, display_name: true}}}},
+              people_in_events: {select:{people:{select:{username: true, display_name: true, id: true}}}},
             }
           }
         }
@@ -155,7 +155,9 @@ export const cohortDataQuery = async (id: number, userId?: string)=>{
   let isFacilitator = data.facilitator  === userId
 
   let cohort_events = data.cohort_events
-    .filter(c=>enrolled || c.everyone)
+    .filter(c=> c.everyone ||
+      data?.facilitator === userId ||
+      (enrolled  && c.events.people_in_events.find(p=>p.people.id === userId)))
     .map(event => produce(event, (e)=>{if(!enrolled) e.events.location = ''}))
   let people_in_cohorts = data.people_in_cohorts.map(person => produce(person, (p)=>{if(!isFacilitator)p.people.email = ''}))
   return {...data, cohort_events, people_in_cohorts}
