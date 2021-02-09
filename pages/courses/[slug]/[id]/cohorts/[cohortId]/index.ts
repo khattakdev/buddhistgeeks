@@ -139,7 +139,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
         h('div', {style: {gridColumn: 1}}, [
           h(Box, {gap: 8}, [
             isFacilitator ? h(Link, {href:window.location.pathname + '/settings'}, h('a', {}, h(Primary, "Cohort Settings"))) : null,
-            h('h1', 'Cohort #'+cohort?.name),
+            h('h1', isNaN(parseInt(cohort.name)) ? cohort.name : `Cohort #${cohort.name}`),
             h(Link,{
               href:`/courses/${cohort.courses.slug}/${cohort.courses.id}`
             } ,h('a.notBlue', {}, h('h3.textSecondary', cohort?.courses.name))),

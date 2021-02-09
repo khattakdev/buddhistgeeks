@@ -68,7 +68,7 @@ function CohortDetails(props:{cohort:Cohort, mutate:(c:Cohort)=>void}) {
         h('h4', 'Blurb'),
         h('small', 'Describe your cohort in one or two sentences. ')
       ]),
-      h(Textarea, {maxLength: 50, ...form.description})
+      h(Textarea, {maxLength: 200, ...form.description})
     ]),
     h(LabelBox, {gap:8}, [
       h('h4', "Start Date"),
