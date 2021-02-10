@@ -183,7 +183,7 @@ async function unenroll (req: Request) {
 
   let person = cohort.people_in_cohorts.find(p=>p.person===msg.person)
   if(!person) return {status:404, result: "ERROR: User is not in cohort"} as const
-  if(!person.payment_intent) return{status:500, result:"ERROR:"} as const
+  if(!person.payment_intent && person.amount_paid !== 0) return {status: 500, result: "ERROR: Amount paid is greater than zero but there is not payment information"} as const
 
 
   await Promise.all([
@@ -196,7 +196,7 @@ async function unenroll (req: Request) {
       person: msg.person,
       cohort: cohortId
     }}}),
-    prisma.refunds.create({
+    !person.payment_intent ? undefined : prisma.refunds.create({
       data:{
         payment_intent: person.payment_intent,
         amount: person.amount_paid,
@@ -214,7 +214,7 @@ async function unenroll (req: Request) {
         }
       }
     }),
-    stripe.refunds.create({payment_intent: person.payment_intent})
+   !person.payment_intent ? undefined : stripe.refunds.create({payment_intent: person.payment_intent})
   ])
 
   return {status: 200, result: {payment_intent: person.payment_intent, person: person.person}} as const
