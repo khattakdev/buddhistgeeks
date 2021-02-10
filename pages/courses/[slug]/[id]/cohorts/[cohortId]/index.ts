@@ -136,14 +136,13 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
     h(Banners, {cohort, mutate, enrolled: !!inCohort, facilitating: isFacilitator}),
     course.type === 'club' ? h(ClubPage, {course, cohort, user, curriculum: props.curriculum, mutate}) : h(Box, {gap: 32}, [
       h(TwoColumn, [
-        h('div', {style: {gridColumn: 1}}, [
-          h(Box, {gap: 8}, [
-            isFacilitator ? h(Link, {href:window.location.pathname + '/settings'}, h('a', {}, h(Primary, "Cohort Settings"))) : null,
-            h('h1', isNaN(parseInt(cohort.name)) ? cohort.name : `Cohort #${cohort.name}`),
-            h(Link,{
-              href:`/courses/${cohort.courses.slug}/${cohort.courses.id}`
-            } ,h('a.notBlue', {}, h('h3.textSecondary', cohort?.courses.name))),
-          ]),
+        h(Box, {gap: 8, style:{gridColumn: 1}}, [
+          isFacilitator ? h(Link, {href:window.location.pathname + '/settings'}, h('a', {}, h(Primary, "Cohort Settings"))) : null,
+          h('h1', isNaN(parseInt(cohort.name)) ? cohort.name : `Cohort #${cohort.name}`),
+          h(Link,{
+            href:`/courses/${cohort.courses.slug}/${cohort.courses.id}`
+          } ,h('a.notBlue', {}, h('h3.textSecondary', cohort?.courses.name))),
+          h('p.big', cohort.description)
         ]),
         Tabs[selectedTab ? selectedTab : tabKeys[0]],
         h(Sidebar, {} , [

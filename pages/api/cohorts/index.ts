@@ -34,6 +34,7 @@ async function handler (req: Request) {
   let course = await prisma.courses.findUnique({
     where: {id: msg.courseId},
     select: {
+      description: true,
       slug: true,
       id: true,
       type: true,
@@ -111,7 +112,7 @@ async function handler (req: Request) {
     data: {
       name: course.course_cohorts.length.toString(),
       category_id: category.id,
-      description: '',
+      description: course.description,
       discourse_groups:{
         create:{
           id: group.basic_group.id,
