@@ -74,7 +74,7 @@ function Details(props: {course:Course, mutate:(c:Course)=>void, curriculum: {id
     prerequisites: props.course.prerequisites,
     cost: props.course.cost,
     duration: props.course.duration
-  })
+  }, [props.course])
   let [status, callUpdateCourse] = useApi<UpdateCourseMsg, UpdateCourseResponse>([state])
 
   const onSubmit = async (e: React.FormEvent) => {

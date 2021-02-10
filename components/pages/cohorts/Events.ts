@@ -101,7 +101,7 @@ const Event = (props: {
     start_time: start_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
     end_time: end_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
     people: event.events.people_in_events.map(p=>p.people.username)
-  })
+  }, [event])
 
   let[status, callUpdateEvent] = useApi<UpdateEventMsg, UpdateEventResult>([props], async (event)=>{
     if(event.type === 'cohort') props.mutate(event.data)
