@@ -33,11 +33,14 @@ export const SmallCohortCard = (props: Cohort) => {
   }, [
     h(Card, {style:{border: '1px solid', borderTop: '4px solid', borderRadius: '2px'}}, [
       h(Box, {gap: 8}, [
-        props.enrolled || props.facilitating ? h(Box, {gap: 8, h: true}, [
-          props.facilitating ? h(Pill, {borderOnly: true}, 'facilitator') : null,
-          props.enrolled ? h(Pill, 'enrolled') : null,
-          !props.live ? h(Pill, {red: true, borderOnly: true},'draft') : null
-        ]): null,
+        h(Box, {h: true},[
+          h('h3', isNaN(parseInt(props.name)) ? props.name : `Cohort #${props.name}`),
+          props.enrolled || props.facilitating ? h(Box, {gap: 8, h: true, style:{alignSelf:"center"}}, [
+            props.facilitating ? h(Pill, {borderOnly: true}, 'facilitator') : null,
+            props.enrolled ? h(Pill, 'enrolled') : null,
+            !props.live ? h(Pill, {red: true, borderOnly: true},'draft') : null
+          ]): null,
+        ]),
         h('div', [
           h('h4', `${started ? "Started" : "Starts"} ${prettyDate(props.start_date)}`),
           h('p', {style:{color: colors.textSecondary}},
