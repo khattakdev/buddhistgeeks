@@ -52,7 +52,7 @@ const Landing = (props:Props) => {
     h(Welcome),
     h(WhyHyperlink, {}, h(Body, {}, h(Intro))),
     !courses || courses.length === 0 ? null : h(Box, {gap: 48}, [
-      h('h1', "Upcoming Courses"),
+      h('h1', {id: 'courses'}, "Upcoming Courses"),
       h(FlexGrid, {min: 400, mobileMin: 320}, 
         courses.flatMap(course=>{
           return course.course_cohorts.map(cohort=>{
