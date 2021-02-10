@@ -9,7 +9,7 @@ import Link from 'next/link'
 export const EventCard = (props:{name: string, start_date: string, end_date: string, cost: number, id: number})=>{
   let start = new Date(props.start_date).toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric'})
   let end = new Date(props.end_date).toLocaleTimeString([], {hour12: true, minute: '2-digit', hour:'numeric', timeZoneName: "short"})
-  return h(Link, {href:`/events/${props.id}`}, h(Container, [
+  return h(Link, {href:`/events/${props.id}`, passHref: true}, h(Container, [
     h(EventCardHeader),
     h(Box, {padding:16, style:{border: '1px solid', borderTop: 'none', borderRadius: '2px'}}, [
       h(Box, {gap:8},[
