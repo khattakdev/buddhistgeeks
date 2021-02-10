@@ -21,8 +21,9 @@ import { CreateCohortMsg, CreateCohortResponse } from 'pages/api/cohorts'
 import { InviteToCourseMsg, InviteToCourseResponse } from 'pages/api/courses/[id]/invite'
 import { Modal } from 'components/Modal'
 import { DeleteTemplateResult } from 'pages/api/courses/[id]/templates/[templateId]'
-import { ClubSettings } from 'components/pages/courses/ClubSettings'
 import { getTaggedPost } from 'src/discourse'
+import { Cohort } from '..'
+import { IconPicker } from 'components/IconPicker'
 
 const COPY = {
   cancelCohort: h('p.textSecondary', [
@@ -46,16 +47,13 @@ function CourseSettings(props:Extract<Props, {notFound:false}>){
   }, [user, course])
   if(!course || !user) return h(PageLoader)
 
-  if(course.type === 'club') return h(ClubSettings, {course, curriculum: props.content})
-
   return h(Box, {gap:64, width: 640}, [
     h(Box, {gap: 16}, [
-      h(BackButton, {href: "/courses/[slug]/[id]", as: `/courses/${router.query.slug}/${router.query.id}`}, 'Course Details'),
-      h('h1', "Course Settings"),
+      h(BackButton, {href: "/courses/[slug]/[id]", as: `/courses/${router.query.slug}/${router.query.id}`}, course.type === 'club' ? "Club" : "Course"),
+      h('h1', "Settings"),
       h('p.big', [
         `Hyperlink is new and some things can only be done manually for now! To add a new maintainer, remove a cohort, or anything else you don't see here, please email `,
         h('a', {href: 'mailto:contact@hyperlink.academy'}, 'contact@hyperlink.academy')]),
-      h('p.big', "Changes will only apply to future cohorts, not existing ones.")
     ]),
     h(Tabs, { tabs: {
       Cohorts: h(CohortSettings, {course, mutate}),
@@ -71,12 +69,27 @@ export default WrappedCourseSettingsPage
 
 
 function CohortSettings(props:{course:Course, mutate: (course:Course)=>void}) {
+  let {data: user} = useUserData()
   return h(Box, {gap: 32}, [
     h(AddCohort, props),
     h(Seperator),
     h(Box, {gap: 16}, [
       h('h3', "Cancel a Cohort"),
       COPY.cancelCohort
+    ]),
+    h(Box, [
+      h('h3', "All Cohorts"),
+      h(Box, {gap:32}, props.course.course_cohorts.map((cohort)=>{
+        let facilitating = user && cohort.facilitator=== user.id
+        return h(Cohort, {
+          cohort,
+          enrolled: false,
+          facilitating,
+          slug: props.course.slug,
+          cohort_max_size: props.course.cohort_max_size,
+          invited: true
+        })
+      })),
     ])
   ])
 }
@@ -227,8 +240,9 @@ invite. The invite allows them enroll in any cohort and does not expire.`)
 }
 
 const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
-  let {state, form, changed, reset} = useFormData({
+  let {state, form, changed, reset, setState} = useFormData({
     name: props.course.name,
+    card_image: props.course.card_image,
     cohort_max_size: props.course.cohort_max_size,
     description: props.course.description,
     prerequisites: props.course.prerequisites,
@@ -244,7 +258,7 @@ const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
   }
 
   return h(FormBox, {onSubmit, gap:32, style:{width: 400}}, [
-    h('h2', 'Edit Course Details'),
+    h('h2', 'Edit Details'),
     h(LabelBox, {gap:8}, [
       h('h4', 'Name'),
       h(Input, {
@@ -258,6 +272,18 @@ const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
       h(Input, {
         type: 'number',
         ...form.cost
+      })
+    ]),
+    props.course.type === 'course' ? null : h(Box,  [
+      h("div", [
+        h('h4', "Emojis"),
+        h('small.textSecondary', "Select three emojis to describe your club! Repeats ok.")
+      ]),
+      h(IconPicker, {
+        icons: state.card_image.split(','),
+        setIcons: (icons:string[]) => {
+          setState({...state, card_image: icons.join(',')})
+        }
       })
     ]),
     h(LabelBox, {gap:8}, [

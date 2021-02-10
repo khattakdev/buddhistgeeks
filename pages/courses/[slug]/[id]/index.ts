@@ -36,7 +36,7 @@ const COPY = {
   curriculumTab: "Curriculum",
   cohortTab: "All Cohorts",
   activeCohorts: "Your Current Cohorts",
-  settings: "You can edit course details, create new cohorts, and more.",
+  settings: "You can edit details, create new cohorts, and more.",
   enrollButton: "Enroll in a cohort",
   updateCurriculum: (props: {id: string}) => h(Info, [
     `💡 You can make changes to the curriculum by editing `,
@@ -145,10 +145,10 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
               h(Seperator),
               !isMaintainer ? h(WatchCourse, {id: course.id}) : h(Box, [
                 h(Box, {gap:8}, [
-                  h('h3', "You maintain this course"),
+                  h('h3', `You maintain this ${course.type}`),
                   h('p.textSecondary', COPY.settings),
                 ]),
-                h(Link, {href:'/courses/[slug]/[id]/settings', as:`/courses/${course.slug}/${course.id}/settings`}, h(Destructive, 'Edit Course Settings'))
+                h(Link, {href:'/courses/[slug]/[id]/settings', as:`/courses/${course.slug}/${course.id}/settings`}, h(Destructive, 'Settings'))
               ])
             ])
           ])]),
@@ -174,15 +174,15 @@ function EnrollStatus (props: {
   }
 
   if (props.enrolled){
-    if (props.upcoming) return h('span.accentSuccess', "You're enrolled in an upcoming cohort of this course. Feel free to enroll in another one though!")
-    return  h('span.accentSuccess', "You're enrolled in an upcoming cohort of this course.")
+    if (props.upcoming) return h('span.accentSuccess', "You're enrolled in an upcoming cohort. Feel free to enroll in another one though!")
+    return  h('span.accentSuccess', "You're enrolled in an upcoming cohort")
   }
 
   if (!props.upcoming) {
     if(props.maintainer) return h('span.accentRed', [
-      "Looks like there aren't any cohorts of this course planned. Create one ", h(Link, {href: "/courses/[slug]/[id]/settings", as: `/courses/${props.courseSlug}/${props.courseId}/settings`}, h('a', 'here')), '.'
+      "Looks like there aren't any cohorts planned. Create one ", h(Link, {href: "/courses/[slug]/[id]/settings", as: `/courses/${props.courseSlug}/${props.courseId}/settings`}, h('a', 'here')), '.'
     ])
-    return h('span.accentRed', "Looks like there aren't any cohorts of this course planned :(")
+    return h('span.accentRed', "Looks like there aren't any cohorts planned :(")
   }
 
   if (props.inviteOnly) {
@@ -226,7 +226,7 @@ const Cohorts = (props:{cohorts: Course['course_cohorts'], user: string, slug: s
     ])
 }
 
-const Cohort = (props: {
+export const Cohort = (props: {
   cohort: Course['course_cohorts'][0],
   facilitating?: boolean,
   enrolled?: boolean,

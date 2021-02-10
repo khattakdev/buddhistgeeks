@@ -28,7 +28,6 @@ import { cohortDataQuery, UpdateCohortMsg, UpdateCohortResponse } from 'pages/ap
 import { courseDataQuery } from 'pages/api/courses/[id]'
 import Head from 'next/head'
 import { CohortEvents } from 'components/pages/cohorts/Events'
-import { ClubPage } from 'components/pages/cohorts/ClubPage'
 import { CreateEvent } from 'components/pages/cohorts/CreateEvent'
 import { AccentImg } from 'components/Images'
 import { TodoList } from 'components/TodoList'
@@ -120,7 +119,14 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
         ]),
       ])
     ]),
-    Curriculum: h(Text, {source:props.curriculum?.text}),
+    [course.type === 'club' ? "Details" : "Curriculum"]: h(Box, [
+      !isFacilitator ? null : h(Info, [
+        `💡 You can make changes to this page by editing `,
+        h('a', {href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.curriculum?.id}`}, `this topic`),
+        ` in the forum`
+      ]),
+      h(Text, {source:props.curriculum?.text})
+    ]),
     Members: h(CohortMembers, {cohort: cohort, isFacilitator, mutate})
       } as {[k:string]:React.ReactElement}
   let tabKeys = Object.keys(Tabs).filter(t=>!!Tabs[t])
@@ -134,10 +140,10 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
     ]}),
     h(WelcomeModal, {display:router.query.welcome !== undefined, cohort, user_calendar: profile ? profile.calendar_id : ''}),
     h(Banners, {cohort, mutate, enrolled: !!inCohort, facilitating: isFacilitator}),
-    course.type === 'club' ? h(ClubPage, {course, cohort, user, curriculum: props.curriculum, mutate}) : h(Box, {gap: 32}, [
+      h(Box, {gap: 32}, [
       h(TwoColumn, [
         h(Box, {gap: 8, style:{gridColumn: 1}}, [
-          isFacilitator ? h(Link, {href:window.location.pathname + '/settings'}, h('a', {}, h(Primary, "Cohort Settings"))) : null,
+          course.type === 'course' ? null :h(Box, {h: true}, props.course.card_image.split(',').map(src=>h('img', {src, style:{imageRendering: 'pixelated'}}))),
           h('h1', isNaN(parseInt(cohort.name)) ? cohort.name : `Cohort #${cohort.name}`),
           h(Link,{
             href:`/courses/${cohort.courses.slug}/${cohort.courses.id}`
@@ -148,6 +154,14 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
         h(Sidebar, {} , [
           h(StickyWrapper, [
             h(Box, {gap: 32}, [
+              inCohort || isStarted || isFacilitator ? null : h(CourseDetails, {course}),
+              inCohort || isStarted || isFacilitator ? null
+                : h(EnrollButton, {
+                  id: cohort.id,
+                  course: course.id,
+                  max_size: course.cohort_max_size,
+                  learners: cohort.people_in_cohorts.length,
+                  invited: !course.invite_only || invited}, "Join this cohort"),
               h(Box, [
                 h('h3', "Information"),
                 h(VerticalTabs, {
@@ -161,6 +175,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
                 })
               ]),
               inCohort || isFacilitator || cohort.completed ? h(Box, {}, [
+                !isFacilitator ? null : h(Link, {href:window.location.pathname + '/settings'}, h('a', {}, h(Primary, "Cohort Settings"))),
                 !inCohort && !isFacilitator ? null : h(Box, [
                   h('a', {href: `${DISCOURSE_URL}/session/sso?return_path=/c/${cohort.category_id}`}
                     , h(Secondary, 'The Forum')),
@@ -170,15 +185,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
                   }, h(Secondary, 'Forum Post from Template')),
                   !cohort.completed && isFacilitator && isStarted ? h(MarkCohortComplete, {cohort, mutate}) : null,
                 ])
-              ]) :  h(CourseDetails, {course}),
-              inCohort || isStarted || isFacilitator ? null
-                : h(EnrollButton, {
-                  id: cohort.id,
-                  course: course.id,
-                  max_size: course.cohort_max_size,
-                  learners: cohort.people_in_cohorts.length,
-                  invited: !course.invite_only || invited}, "Join this cohort"),
-
+              ]) :  null,
             ])
           ])
         ])
