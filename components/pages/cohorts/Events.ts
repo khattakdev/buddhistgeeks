@@ -95,7 +95,7 @@ const Event = (props: {
   let {state, setState} = useFormData({
     everyone: !event.everyone,
     name: event.events.name,
-    location: event.events.location || '',
+    location: event.events.location,
     description: event.events.description,
     start_date: `${start_date.getFullYear()}-${('0'+(start_date.getMonth()+1)).slice(-2)}-${('0'+start_date.getDate()).slice(-2)}`,
     start_time: start_date.toLocaleTimeString([], {hour:"2-digit", minute: "2-digit", hour12: false}),
