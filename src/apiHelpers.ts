@@ -55,6 +55,7 @@ export const APIHandler = (handler: Handler | Partial<{POST: Handler, GET: Handl
         res.setHeader(header, result.headers[header])
       }
     }
+    if(result.status!==200) console.log(result.result)
     if(typeof result.result !== 'object') return res.status(result.status).send(result.result)
     return res.status(result.status).json(result.result)
   }
