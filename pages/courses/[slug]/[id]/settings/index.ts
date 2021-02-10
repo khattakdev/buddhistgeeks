@@ -178,7 +178,7 @@ export const Invites = (props:{course:Course, mutate: (c:Course) => void})=> {
   }
 
   return h(Box, {gap: 16, width: 400}, [
-    h('h1', "Invites"),
+    h('h2', "Invites"),
     h(Box, {gap:32}, [
       h(FormBox, {onSubmit: onSubmitToggleInviteOnly}, [
         h(LabelBox, { gap:8, width: 400}, [

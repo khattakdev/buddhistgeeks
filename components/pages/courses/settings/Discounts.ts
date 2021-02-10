@@ -4,11 +4,12 @@ import { useDiscounts } from "src/data"
 import { CreateDiscountMsg, CreateDiscountResult } from "pages/api/courses/[id]/discounts"
 import { useApi } from "src/apiHelpers"
 import { Box, FormBox, LabelBox } from "components/Layout"
-import { Input, CheckBox, Radio } from "components/Form"
+import { Input, Radio } from "components/Form"
 import { PageLoader } from "components/Loader"
 import { Primary, Secondary, Destructive } from "components/Button"
 import { course_discounts } from "@prisma/client"
 import { DeleteDiscountResult } from "pages/api/discounts/[code]"
+import { colors } from "components/Tokens"
 
 export function Discounts(props: {course:number}) {
   let {data: discounts, mutate} = useDiscounts(props.course)
@@ -28,8 +29,9 @@ export function Discounts(props: {course:number}) {
     callCreateDiscount(`/api/courses/${props.course}/discounts`, newDiscount)
   }
   return h(Box, {gap:32}, [
-    h('h2', "Discounts"),
-    h(FormBox, {onSubmit, width: 400}, [
+    h(Box, {width: 640, padding: 32, style:{backgroundColor: colors.accentPeach}}, [
+    h(FormBox, {gap:32, onSubmit, width: 400}, [
+      h('h3', "Add a New Discount"),
       h(LabelBox, {gap:8}, [
         h('h4', "Discount Name"),
         h(Input, {
@@ -66,15 +68,19 @@ export function Discounts(props: {course:number}) {
           })
         ])
       ]),
-      h(LabelBox, {gap: 8}, [
-        h(CheckBox, [
-          h(Input, {
-            type: 'checkbox',
-            checked: newDiscount.limited_uses,
-            onChange: e => setNewDiscount({...newDiscount, limited_uses: e.currentTarget.checked})
-          }),
-          "Limit uses of this discount code"
-        ])
+      h(LabelBox, {gap:8}, [
+        h('h4', "Usage Restrictions"),
+        h(Radio, {
+          name:"usage-restrictions",
+          selected: newDiscount.limited_uses ? 'limited' : 'unlimited',
+          onChange: (value) => {
+            setNewDiscount({...newDiscount, limited_uses: value === 'limited'})
+          },
+          items: [
+            {value: 'unlimited', component: h('p', `Unlimited uses. Discount is valid until you cancel it`)},
+            {value: 'limited', component: h('p', `Limited uses. Discount is only valid for a number of uses`)}
+          ]
+        })
       ]),
       newDiscount.limited_uses ? h(LabelBox,  {gap: 8}, [
         h('h4', 'Max uses'),
@@ -88,6 +94,9 @@ export function Discounts(props: {course:number}) {
       ]) : null,
       h(Primary, {type: 'submit', status}, "Create New Discount")
     ]),
+    ]),
+    h('h2', "Discounts"),
+    h('p', `Copy the Share Links below and send them to people to offer them a discounted rate on your course!)`),
     !discounts
       ? h(PageLoader)
       : h(Box, {gap: 32}, discounts.map(discount => h('div', [
