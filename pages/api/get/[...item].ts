@@ -23,11 +23,12 @@ async function getUserCohorts(req:Request) {
     where:{
       OR: [
         {people_in_cohorts: {some: {person: token.id}}},
-        {facilitator: token.id}
+        {cohort_facilitators: {some:{facilitator: token.id}}}
       ]
     },
     include:{
       courses: {select: {name: true, slug: true, card_image: true, id: true, type: true, description: true, cohort_max_size: true}},
+      cohort_facilitators: true,
       cohort_events: {
         where:{
           OR:[

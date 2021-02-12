@@ -76,7 +76,7 @@ async function createCourse(req: Request) {
       visibility_level: 2,
       owner_usernames: maintainers.map(m=>m.username),
       messageable_level: 3,
-      mentionable_level: 3
+      mentionable_level: 99
     }),
     createGroup({
       name: slug,

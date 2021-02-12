@@ -76,7 +76,7 @@ const Dashboard = () => {
 
               h(Box, {gap: 64},
                 activeCohorts.map(cohort => {
-                  let facilitating = cohort.facilitator === (user ? user.id: '')
+                  let facilitating = !!cohort.cohort_facilitators.find(f=>user && f.facilitator === user.id)
                   return h(EnrolledCohort, {cohort, facilitating})
                 }))
             ]),

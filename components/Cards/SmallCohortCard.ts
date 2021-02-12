@@ -10,8 +10,7 @@ import {prettyDate} from 'src/utils'
 type Cohort = {
   name: string,
   start_date: string,
-  people: {display_name?:string | null,
-           username:string},
+  facilitators: string[]
   completed?: string | null,
   live: boolean,
   enrolled?:boolean,
@@ -44,7 +43,7 @@ export const SmallCohortCard = (props: Cohort) => {
         h('div', [
           h('h4', `${started ? "Started" : "Starts"} ${prettyDate(props.start_date)}`),
           h('p', {style:{color: colors.textSecondary}},
-            `Facilitated by ${props.people.display_name || props.people.username}`)
+            `Facilitated by ${props.facilitators.join(', ')}`)
         ])
       ])
     ])

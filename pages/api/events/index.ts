@@ -50,14 +50,20 @@ async function createEvent(req:Request) {
 
   switch(msg.type){
       case 'cohort': {
-        let cohort = await prisma.course_cohorts.findUnique({where: {id: msg.cohort}, select:{facilitator: true, people: {select:{username: true}},people_in_cohorts: {select:{people: {select: {username: true}}}}}})
+        let cohort = await prisma.course_cohorts.findUnique({
+          where: {id: msg.cohort},
+          select:{
+            cohort_facilitators: {include:{people: {select:{username:true}}}},
+            people_in_cohorts: {select:{people: {select: {username: true}}}}
+          }})
         if(!cohort) return {status: 404, result: `ERROR: no cohort with id ${msg.cohort} found`} as const
 
-        if(cohort.facilitator !== user.id &&
+        if(!cohort.cohort_facilitators.find(f=> user&&f.facilitator ===user.id) &&
           !cohort.people_in_cohorts.find(p=>user&&p.people.username===user.username)) return {status: 401, result: "ERROR: user is not enrolled or a facilitator of the cohort"} as const
         if(msg.people){
           for(let username of msg.people) {
-            if(!cohort.people_in_cohorts.find(p=>p.people.username === username) && username !== cohort.people.username) return {status:400, result: `ERROR: can't add person who is not part of the cohort or facilitator`} as const
+            if(!cohort.people_in_cohorts.find(p=>p.people.username === username) &&
+              cohort.cohort_facilitators.find(f=>f.people.username===username)) return {status:400, result: `ERROR: can't add person who is not part of the cohort or facilitator`} as const
           }
         }
 

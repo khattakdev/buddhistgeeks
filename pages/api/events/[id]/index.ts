@@ -92,10 +92,10 @@ async function updateEvent(req:Request) {
 
   switch(msg.type){
       case 'cohort': {
-        let cohort = await prisma.course_cohorts.findUnique({where: {id: msg.cohort}, select:{facilitator: true}})
+        let cohort = await prisma.course_cohorts.findUnique({where: {id: msg.cohort}, select:{cohort_facilitators: true}})
         if(!cohort) return {status: 404, result: `ERROR: no cohort with id ${msg.cohort} found`} as const
 
-        if(cohort.facilitator !== user.id && event.created_by!==user.id) return {status: 401, result: "ERROR: user is not a facilitator of the cohort"} as const
+        if(!cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id) && event.created_by!==user.id) return {status: 401, result: "ERROR: user is not creator of event or a facilitator of the cohort"} as const
 
         let newEvent = await prisma.cohort_events.update({
           where:{cohort_event:{cohort: msg.cohort, event: eventId}},
@@ -197,7 +197,7 @@ async function deleteEvent(req:Request) {
       cohort_events: {
         select:{
           course_cohorts: {
-            select:{facilitator: true, people_in_cohorts:{select:{people:{select: {username: true}}}}}
+            select:{cohort_facilitators: true, people_in_cohorts:{select:{people:{select: {username: true}}}}}
           }
         }
       }
@@ -206,7 +206,7 @@ async function deleteEvent(req:Request) {
 
   if(!event) return {status: 404, result: `ERROR: no event with id ${eventId} found`} as const
 
-  if(event.cohort_events[0]?.course_cohorts.facilitator !== user.id && user.id !== event.created_by) return {status: 401, result: "ERROR: user is not a facilitator of the cohort this event is in"} as const
+  if(!event.cohort_events[0]?.course_cohorts.cohort_facilitators.find(f=>user&&f.facilitator===user.id) && user.id !== event.created_by) return {status: 401, result: "ERROR: user is not a facilitator of the cohort this event is in"} as const
 
   await prisma.cohort_events.deleteMany({where: {event: eventId}}),
   await prisma.people_in_events.deleteMany({where:{event: eventId}})

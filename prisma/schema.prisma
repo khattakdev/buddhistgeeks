@@ -22,22 +22,24 @@ model admins {
 }
 
 model course_cohorts {
-  start_date        String
-  facilitator       String
-  completed         String?
-  live              Boolean             @default(false)
-  course            Int
-  category_id       Int                 @unique
-  name              String
-  id                Int                 @id @default(autoincrement())
-  cohort_group      Int
-  description       String
-  discourse_groups  discourse_groups    @relation(fields: [cohort_group], references: [id])
-  courses           courses             @relation(fields: [course], references: [id])
-  people            people              @relation(fields: [facilitator], references: [id])
-  cohort_events     cohort_events[]
-  cohort_refunds    cohort_refunds[]
-  people_in_cohorts people_in_cohorts[]
+  start_date          String
+  facilitator         String
+  completed           String?
+  live                Boolean               @default(false)
+  course              Int
+  category_id         Int                   @unique
+  name                String
+  id                  Int                   @id @default(autoincrement())
+  cohort_group        Int
+  paid_out            Boolean               @default(false)
+  description         String
+  discourse_groups    discourse_groups      @relation(fields: [cohort_group], references: [id])
+  courses             courses               @relation(fields: [course], references: [id])
+  people              people                @relation(fields: [facilitator], references: [id])
+  cohort_events       cohort_events[]
+  cohort_facilitators cohort_facilitators[]
+  cohort_refunds      cohort_refunds[]
+  people_in_cohorts   people_in_cohorts[]
 }
 
 model course_discounts {
@@ -127,10 +129,11 @@ model people {
   username                  String                     @unique
   bio                       String                     @default("")
   link                      String                     @default("")
-  calendar_id               String                     @unique @default(dbgenerated())
+  calendar_id               String                     @unique @default(dbgenerated("uuid_generate_v4()"))
   pronouns                  String                     @default("")
   stripe_customer_id        String?
   admins                    admins?
+  cohort_facilitators       cohort_facilitators[]
   cohort_refunds            cohort_refunds[]
   course_cohorts            course_cohorts[]
   course_maintainers        course_maintainers[]
@@ -261,6 +264,15 @@ model refunds {
   payment_intent String          @id
   amount         Int
   cohort_refunds cohort_refunds?
+}
+
+model cohort_facilitators {
+  cohort         Int
+  facilitator    String
+  course_cohorts course_cohorts @relation(fields: [cohort], references: [id])
+  people         people         @relation(fields: [facilitator], references: [id])
+
+  @@id([cohort, facilitator])
 }
 
 enum course_status {

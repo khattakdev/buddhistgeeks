@@ -57,14 +57,14 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
 
   if(!course) return h(PageLoader)
 
-  let activeCohorts = course?.course_cohorts.filter(i => {
+  let activeCohorts = course?.course_cohorts.filter(c => {
     if(!user) return false
-    return i.completed === null && (i.facilitator === user.id
-      || i.people_in_cohorts
+    return c.completed === null && (!!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)
+      || c.people_in_cohorts
         .find(p => p.people.id === (user ? user.id : undefined)))
   }) || []
 
-  let enrolled = activeCohorts.filter(i=>i.facilitator !== (user ? user.id : '')).length > 0
+  let enrolled = activeCohorts.filter(c=>!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)).length > 0
   let upcomingCohorts = course.course_cohorts.filter(c=> (new Date(c.start_date) > new Date()) && c.live)
 
   let isMaintainer = !!(course?.course_maintainers.find(maintainer => user && maintainer.maintainer === user.id))
@@ -104,12 +104,13 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
             h('h3', COPY.activeCohorts),
             ...activeCohorts.map(cohort=> h(SmallCohortCard, {
               ...cohort,
+              facilitators: cohort.cohort_facilitators.map(f=>f.people.display_name || f.people.username),
               courses: {
                 name: course?.name || '',
                 slug: course?.slug || '',
               },
-              facilitating: cohort.facilitator === (user ? user?.id : undefined),
-              enrolled: !(cohort.facilitator === (user ? user?.id : undefined))
+              facilitating: !!cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id),
+              enrolled: !cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id)
             }))
           ]),
       ]),
@@ -200,11 +201,11 @@ const Cohorts = (props:{cohorts: Course['course_cohorts'], user: string, slug: s
   let [pastCohorts, upcomingCohorts] = props.cohorts
   .filter(c=>{
     if(c.live) return true
-    return c.facilitator === props.user
+    return !!c.cohort_facilitators.find(f=>f.facilitator===props.user)
   }).sort((a, b) => new Date(a.start_date) > new Date(b.start_date) ? 1 : -1)
     .reduce((acc, cohort)=>{
       let enrolled = !!cohort.people_in_cohorts.find(p => p.people.id === props.user)
-      let facilitating = cohort.facilitator=== props.user
+      let facilitating = !!cohort.cohort_facilitators.find(f=>f.facilitator === props.user)
       acc[new Date(cohort.start_date)< new Date() ? 0 : 1].push(
         h(Cohort, {
           cohort,
@@ -253,7 +254,12 @@ export const Cohort = (props: {
       }, h('a', {style: {textDecoration: 'none'}}, isNaN(parseInt(props.cohort.name)) ? props.cohort.name : `Cohort #${props.cohort.name}`))),
       h(Box, {style: {color: colors.textSecondary}, gap: 4}, [
         h('strong', cohortPrettyDate(props.cohort.start_date, props.cohort.completed)),
-        h('div', [`Facilitated by `,  h(Link, {href:`/people/${props.cohort.people.username}`}, h('a', props.cohort.people.display_name || props.cohort.people.username))])
+        h('div', [
+          `Facilitated by `,
+          ...props.cohort.cohort_facilitators.flatMap(f=>{
+            return [h(Link, {href:`/people/${f.people.username}`}, h('a', f.people.display_name || f.people.username)), ', ']
+          }).slice(0, -1)
+        ])
       ]),
       props.cohort_max_size === 0 || past ? null : props.cohort_max_size > props.cohort.people_in_cohorts.length
         ? h('span.accentSuccess', `${props.cohort_max_size - props.cohort.people_in_cohorts.length} ${props.cohort_max_size - props.cohort.people_in_cohorts.length === 1 ? 'spot' : 'spots'} left!`)

@@ -66,7 +66,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
 
   let invited = !!userCohorts?.invited_courses.find(course=>course.id === props.course.id )
   let inCohort = cohort.people_in_cohorts.find(p => p.person === (user ? user.id : undefined))
-  let isFacilitator  = !!user && cohort.people.username === user.username
+  let isFacilitator  = !!user && !!cohort.cohort_facilitators.find(f=>user &&f.people.username === user.username)
   let isStarted = cohort && new Date() > new Date(cohort.start_date)
 
   let Tabs = {
@@ -80,7 +80,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
     Schedule: cohort.cohort_events.length === 0 && !isFacilitator ? null : h(Box, {gap: 32}, [
       isFacilitator || inCohort ? h(CreateEvent, {
         cohort: cohort.id,
-        people: [...cohort.people_in_cohorts.map(p=>p.people.username), cohort.people.username],
+        people: [...cohort.people_in_cohorts.map(p=>p.people.username), ...cohort.cohort_facilitators.map(f=>f.people.username)],
         mutate: (c)=>{
           if(!cohort) return
           mutate({...cohort, cohort_events: [...cohort.cohort_events, c]})
@@ -99,7 +99,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
             cohort: cohort.id,
             events: cohort.cohort_events.filter(c=>{
               if(!user || !cohort) return c.everyone
-              if(cohort.facilitator === user.id) return true
+              if(isFacilitator) return true
               return c.everyone || c.events.people_in_events.find(p=>user&&p.people.username===user.username)
             }),
             mutate: (events)=>{
@@ -127,7 +127,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
       ]),
       h(Text, {source:props.curriculum?.text})
     ]),
-    Members: h(CohortMembers, {cohort: cohort, isFacilitator, mutate})
+    Members: h(CohortMembers, {cohort: cohort, isFacilitator, mutate, user: user ? user.id : undefined})
       } as {[k:string]:React.ReactElement}
   let tabKeys = Object.keys(Tabs).filter(t=>!!Tabs[t])
 
@@ -206,7 +206,7 @@ height: 200px;
 width: 200px;
 `
 
-export const CohortMembers = (props:{cohort:Cohort, isFacilitator: boolean, mutate: (c:Cohort)=>void}) => {
+export const CohortMembers = (props:{cohort:Cohort, isFacilitator: boolean, user?: string, mutate: (c:Cohort)=>void}) => {
   let [unenrollState, setUnenrollState] = useState<{personID:string, username: string, cohortID:number, display_name?:string, removeMember:()=>void}>()
   return h(Fragment, [
     !unenrollState ? null : h(UnenrollModal, {
@@ -214,25 +214,29 @@ export const CohortMembers = (props:{cohort:Cohort, isFacilitator: boolean, muta
       ...unenrollState
     }),
     h(Box, {gap:16}, [
-    h('h3', [
-      `Facilitated by `, h(Link, {
-        href: '/people/[id]',
-        as: `/people/${props.cohort.people.username}`
-      }, h('a', {className: 'notBlue'}, props.cohort.people.display_name || props.cohort.people.username)),
-      props.cohort.people.pronouns ? h('span.textSecondary', {}, ` (${props.cohort.people.pronouns})`) : null
-    ]),
+      h('h3', "Facilitators"),
+      props.isFacilitator ? null : h(Info, [
+        `Questions about this `,
+        props.cohort.courses.type === 'club' ? `club` : `course`,
+        `? `,
+        h('a', {href: `https://forum.hyperlink.academy/new-message?groupname=${props.cohort.courses.slug}-m`, target: `_blank`}, `Message the facilitator`),
+        ` on the forum.`
+      ]),
+      ...props.cohort.cohort_facilitators.map(f=>h(Box, [
+        props.user === f.facilitator ? h(Info, [`💡 You can edit your bio in the profile tab on your `, h(Link, {href: '/dashboard'}, h('a', 'dashboard'))]) : null,
+        h('h3', [
+          ``, h(Link, {
+            href: '/people/[id]',
+            as: `/people/${f.people.username}`
+          }, h('a', {className: 'notBlue'}, f.people.display_name || f.people.username)),
+          f.people.pronouns ? h('span.textSecondary', {}, ` (${f.people.pronouns})`) : null
+        ]),
+        h(Text, {source: f.people.bio || ''}),
+      ])),
+
     // message facilitator - shows for logged in and anon users; hidden on things you're facilitating
-    props.isFacilitator ? null : h(Info, [
-      `Questions about this `, 
-      props.cohort.courses.type === 'club' ? `club` : `course`,
-      `? `,
-      h('a', {href: `https://forum.hyperlink.academy/new-message?username=` + props.cohort.people.username, target: `_blank`}, `Message the facilitator`),
-      ` on the forum.`
-    ]),
 
-    props.isFacilitator ? h(Info, [`💡 You can edit your bio in the profile tab on your `, h(Link, {href: '/dashboard'}, h('a', 'dashboard'))]) : null,
 
-    h(Text, {source: props.cohort.people.bio || ''}),
     props.cohort.people_in_cohorts.length === 0 ? null : h(Box, {h: true}, [
       h('h4', ["Members ", h('span.textSecondary', `(${props.cohort.people_in_cohorts.length}${props.cohort.courses.cohort_max_size !== 0 ? `/${props.cohort.courses.cohort_max_size}` :''})`)]),
       !props.isFacilitator ? null : h('a', {
