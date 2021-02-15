@@ -62,7 +62,7 @@ async function handler (req: Request) {
   })
   if(!group) return {status:500, result: "ERRO: unable to create group"} as const
 
-  await updateCategory(course.category_id, {name: course.name, permissions: {
+  let courseCategoryPermissions = {
     // Make sure to keep any existing cohorts as well
     ...course.course_cohorts.reduce((acc, cohort) => {
       acc[cohort.discourse_groups.name] = 1
@@ -71,7 +71,10 @@ async function handler (req: Request) {
     [groupName]: 1,
     [course.maintainer_groupTodiscourse_groups.name]: 1,
     [course.course_groupTodiscourse_groups.name]: 1
-  }})
+  }
+  console.log(courseCategoryPermissions)
+
+  await updateCategory(course.category_id, {name: course.name, permissions: courseCategoryPermissions})
   let category = await createCategory(groupName, {permissions: {[groupName]:1}, parent_category_id: course.category_id})
   if(!category) return {status: 500, result: "ERROR: Could not create cohort category"} as const
 
