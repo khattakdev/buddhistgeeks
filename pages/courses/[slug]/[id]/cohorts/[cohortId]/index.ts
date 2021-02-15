@@ -33,18 +33,6 @@ import { AccentImg } from 'components/Images'
 import { TodoList } from 'components/TodoList'
 import { UnEnrollMsg, UnEnrollResponse } from 'pages/api/cohorts/[cohortId]/enroll'
 
-const COPY = {
-  detailsTab: "Details",
-  artifactsTab: "Artifacts",
-  curriculumTab: "Curriculum",
-  participants: "Participants",
-  updateNotes: (props: {id: string}) => h(Info, [
-    `💡 You can make changes to the cohort details by editing `,
-    h('a', {href: `${DISCOURSE_URL}/t/${props.id}`}, `this topic`),
-    ` in the forum`
-  ])
-}
-
 type Props = InferGetStaticPropsType<typeof getStaticProps>
 const WrappedCohortPage = (props: Props)=>  props.notFound ? h(ErrorPage) : h(CohortPage, props)
 export default WrappedCohortPage
@@ -109,14 +97,6 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
             },
             showCal: (inCohort || isFacilitator) && cohort.cohort_events.length > 0
           })
-      ])
-    ]),
-    ["Cohort Details"]: !props.notes?.text ? null : h(Box, {gap: 64}, [
-      h(Box, {gap: 32},[
-        isFacilitator ? h(COPY.updateNotes, {id: props.notes?.id}) : null,
-        !props.notes ? null : h(Box, [
-          h(Text, {source: props.notes?.text})
-        ]),
       ])
     ]),
     [course.type === 'club' ? "Details" : "Curriculum"]: h(Box, [
@@ -458,9 +438,6 @@ const TODOBanner = (props:{
               h("span", [
                 "Fill out ", h(Link, {href: `https://hyperlink.academy/dashboard?tab=Profile`}, "your bio"), " and tell people more about you."
               ]),
-              props.cohort.courses.type === 'club' ? null : h("span", [
-                "Fill out the ", h("a", {href: `${DISCOURSE_URL}/session/sso?return_path=/c/${props.cohort.category_id}`}, "Notes topic"), " in the forum with  any cohort-specific details. This is visible to everyone, even if they aren't enrolled, so don't put anything private here."
-              ]),
               h("span", [
                 "Fill out the ", h("a", {href: `${DISCOURSE_URL}/session/sso?return_path=/c/${props.cohort.category_id}`}, "Getting Started topic"), " in the forum with any first steps learners should take. This will be linked in the welcome email sent to everyone who enrolls."
               ])
@@ -504,8 +481,7 @@ export const getStaticProps = async (ctx:any)=>{
 
   if(!cohort) return {props: {notFound: true}} as const
 
-  let [notes, artifacts, curriculum] = await Promise.all([
-    getTaggedPost(cohort.category_id, 'note'),
+  let [artifacts, curriculum] = await Promise.all([
     getTaggedPost(cohort.category_id, 'artifact'),
     getTaggedPost(cohort.courses.category_id, 'curriculum')
   ])
@@ -515,7 +491,6 @@ export const getStaticProps = async (ctx:any)=>{
     cohortId,
     cohort,
     course,
-    notes,
     curriculum,
     artifacts},
           revalidate: 1} as const

@@ -81,15 +81,7 @@ async function handler (req: Request) {
   await Promise.all(course.course_templates.map( async template => {
     if(!category) return
     if(template.type === 'prepopulated') {
-      if(template.name === ('Notes') && course?.type === 'course') {
-        return updateTopic(category.topic_url, {
-          category_id: category.id,
-          title: groupName + " Notes",
-          raw: template.content,
-          tags: ['note']
-        }, admin)
-      }
-      if(template.name === "Getting Started" && course?.type === 'club') {
+      if(template.name === "Getting Started") {
         return updateTopic(category.topic_url, {
           category_id: category.id,
           title: " Getting Started",
