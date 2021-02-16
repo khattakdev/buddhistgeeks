@@ -16,6 +16,7 @@ import Settings from 'components/pages/dashboard/Settings'
 import {Primary, Secondary, SmallLinkButton} from 'components/Button'
 import { EnrolledCohort } from 'components/pages/dashboard/EnrolledCohort'
 import { Calendar } from 'components/Icons'
+import { EventCard } from 'components/Cards/EventCard'
 
 const COPY = {
   coursesHeader: "All Courses",
@@ -29,7 +30,7 @@ Garden. Check out some in development, or propose your own!`,
 
 const Dashboard = () => {
   let {data: user, mutate} = useUserData()
-  let {data: cohorts} = useUserCohorts()
+  let {data: enrolledThings} = useUserCohorts()
   let {data: profile, mutate:mutateProfile} = useProfileData(user ? user.username : undefined)
   let {data: userCourses} = useUserCourses()
   let router = useRouter()
@@ -38,17 +39,18 @@ const Dashboard = () => {
     if(user === false) router.push('/')
   }, [user])
 
-  if(!user || cohorts === undefined || userCourses === undefined || profile === undefined || profile === false) {
+  if(!user || enrolledThings === undefined || userCourses === undefined || profile === undefined || profile === false) {
     return h(PageLoader)
   }
 
-  let completedCohorts = cohorts.course_cohorts.filter(c=> c.completed)
-  let activeCohorts = cohorts.course_cohorts
+  let completedCohorts = enrolledThings.course_cohorts.filter(c=> c.completed)
+  let activeCohorts = enrolledThings.course_cohorts
     .filter(c=>!c.completed)
     .sort((a, b)=>{
       if(new Date(a.start_date) < new Date(b.start_date)) return -1
       return 1
     })
+  let upcomingEvents = enrolledThings.events.filter(e=>e.events.end_date>new Date().toISOString())
   let [clubs, courses] = userCourses.maintaining_courses.reduce((acc, c)=> {
     acc[c.type === 'club' ? 0 : 1].push(c)
     return acc
@@ -58,8 +60,8 @@ const Dashboard = () => {
     h('h1', `Hello ${user.display_name || user.username}!`),
     h(Tabs, {
       tabs: {
-        Enrolled: h(Box, {gap:64}, [
-          activeCohorts.length === 0
+        Active: h(Box, {gap:64}, [
+          activeCohorts.length === 0 && upcomingEvents.length === 0
             ? h (WhiteContainer, [
               h(Box, {gap:16, style: {maxWidth: 400, textAlign: 'center', margin: 'auto'}}, [
                 h( EmptyImg, {src: 'img/empty.png'}),
@@ -72,8 +74,11 @@ const Dashboard = () => {
               h(Link, {href: "/calendar"}, 
                 h(SmallLinkButton, {textSecondary: true}, 
                   h(Box, {h:true, gap:8, style: {background: colors.grey95, padding: 16}}, [ Calendar, 'add all events to your calendar'])
-                )),
-
+                 )),
+              upcomingEvents.length === 0 ? null : h(Box, [
+                h('h2', "Events"),
+                h(FlexGrid, {min: 400, mobileMin: 300}, upcomingEvents.map(ev => h(EventCard, {cost: ev.cost, ...ev.events}))),
+              ]),
               h(Box, {gap: 64},
                 activeCohorts.map(cohort => {
                   let facilitating = !!cohort.cohort_facilitators.find(f=>user && f.facilitator === user.id)
@@ -97,7 +102,7 @@ const Dashboard = () => {
           h(FlexGrid, {min: 400, mobileMin:320}, completedCohorts.map(cohort => {
             if(cohort.courses.type === 'club') return ClubCohortCard({...cohort, course: cohort.courses})
             return h(CourseCohortCard, {...cohort, course:cohort.courses})
-            }))
+          }))
         ]),
         Maintaining: userCourses.maintaining_courses.length === 0 ? null : h(Box, {gap: 32}, [
           h(Box, [
