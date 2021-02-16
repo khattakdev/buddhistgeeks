@@ -38,6 +38,8 @@ export const getStripe = () => {
   return stripePromise
 }
 
+export const cohortName = (name: string)=>isNaN(parseInt(name)) ? name  :`Cohort #${name}`
+
 export function formHelper<S>(state:S, setState:(s:S)=>void) {
   return Object.keys(state).reduce((acc, key)=> {
     let value =state[key as keyof S]

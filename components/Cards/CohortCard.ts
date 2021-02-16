@@ -4,7 +4,7 @@ import {Card} from '.'
 import styled from '@emotion/styled'
 import { colors, Mobile } from 'components/Tokens'
 import {Box} from 'components/Layout'
-import {prettyDate} from 'src/utils'
+import { cohortName, prettyDate} from 'src/utils'
 
 type Props = {
   id: number,
@@ -32,7 +32,7 @@ export const CourseCohortCard = (props:Props) => {
     h(Content, [
       h(Box, {gap: 4}, [
         h('h3', props.course.name),
-        h('h4.textSecondary', isNaN(parseInt(props.name)) ? props.name  :`Cohort #${props.name}` ),
+        h('h4.textSecondary', cohortName(props.name) ),
       ]),
       h('p.textSecondary', props.course.description),
       h('span', [
@@ -85,7 +85,7 @@ export const ClubCohortCard = (props: Props) => {
         h(Box, {h: true}, props.course.card_image.split(',').map(src=> h('img', {src}))),
         h(Box,{gap:4},[
           h('h3', props.course.name),
-          h('h4.textSecondary', isNaN(parseInt(props.name)) ? props.name  :`Cohort #${props.name}` ),
+          h('h4.textSecondary', cohortName(props.name)),
         ])
       ]),
       h(ClubCohortCardContent, [

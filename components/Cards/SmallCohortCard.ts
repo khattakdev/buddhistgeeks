@@ -5,7 +5,7 @@ import {colors, } from 'components/Tokens'
 import {Box} from 'components/Layout'
 import {Card} from '.'
 import { Pill } from 'components/Pill'
-import {prettyDate} from 'src/utils'
+import { cohortName, prettyDate} from 'src/utils'
 
 type Cohort = {
   name: string,
@@ -33,7 +33,7 @@ export const SmallCohortCard = (props: Cohort) => {
     h(Card, {style:{border: '1px solid', borderTop: '4px solid', borderRadius: '2px'}}, [
       h(Box, {gap: 8}, [
         h(Box, {h: true},[
-          h('h3', isNaN(parseInt(props.name)) ? props.name : `Cohort #${props.name}`),
+          h('h3', cohortName(props.name)),
           props.enrolled || props.facilitating ? h(Box, {gap: 8, h: true, style:{alignSelf:"center"}}, [
             props.facilitating ? h(Pill, {borderOnly: true}, 'facilitator') : null,
             props.enrolled ? h(Pill, 'enrolled') : null,

@@ -18,7 +18,7 @@ import {TwoColumnBanner} from 'components/Banner'
 import Text from 'components/Text'
 import {WelcomeModal} from 'components/pages/cohorts/WelcomeModal'
 
-import {prettyDate} from 'src/utils'
+import { cohortName, prettyDate} from 'src/utils'
 import {  getTaggedPost } from 'src/discourse'
 import {DISCOURSE_URL} from 'src/constants'
 import { callApi, useApi } from 'src/apiHelpers'
@@ -124,7 +124,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
       h(TwoColumn, [
         h(Box, {gap: 8, style:{gridColumn: 1}}, [
           course.type === 'course' ? null :h(Box, {h: true}, props.course.card_image.split(',').map(src=>h('img', {src, style:{imageRendering: 'pixelated'}}))),
-          h('h1', isNaN(parseInt(cohort.name)) ? cohort.name : `Cohort #${cohort.name}`),
+          h('h1', cohortName(cohort.name)),
           h(Link,{
             href:`/courses/${cohort.courses.slug}/${cohort.courses.id}`
           } ,h('a.notBlue', {}, h('h3.textSecondary', cohort?.courses.name))),

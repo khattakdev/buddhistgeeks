@@ -2,7 +2,7 @@ import h from 'react-hyperscript'
 import { Box } from 'components/Layout'
 import Link from 'next/link'
 import { Pill } from 'components/Pill'
-import { getTimeBetween } from 'src/utils'
+import { cohortName, getTimeBetween } from 'src/utils'
 import styled from '@emotion/styled'
 import { Secondary } from 'components/Button'
 import Text from 'components/Text'
@@ -45,7 +45,7 @@ export function EnrolledCohort(props: Props) {
       }, h('a', {style:{textDecoration: 'none'}}, h('h2', props.cohort.courses.name))),
       //cohort number
       h(Box, {h: true, gap:16, style:{alignItems: 'center'}}, [
-        h('h3.textSecondary', `Cohort #${props.cohort.name}`),
+        h('h3.textSecondary', cohortName(props.cohort.name)),
         props.facilitating ? h(Pill, {borderOnly: true}, 'facilitator') : null,
         !props.cohort.live ? h(Pill, {red: true, borderOnly: true}, "draft") : null
       ])

@@ -13,6 +13,7 @@ import { Tabs } from 'components/Tabs'
 import { Input, Textarea } from 'components/Form'
 import { useFormData } from 'src/hooks'
 import { useApi } from 'src/apiHelpers'
+import { cohortName } from 'src/utils'
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>
 export default function WrappedSettingsPage(props:Props) {return props.notFound ? h(ErrorPage) : h(CohortSettingsPage, props)}
@@ -30,7 +31,7 @@ const CohortSettingsPage= (props: Extract<Props, {notFound:false}>) => {
     h(Box, [
       h(BackButton, {href:`/courses/${props.cohort.courses.slug}/${props.cohort.courses.id}/cohorts/${props.cohort.id}`}, "Cohort"),
       h('h1', "Cohort Settings"),
-      h('h4', `Cohort ${isNaN(parseInt(cohort.name)) ? "":'#'}${cohort.name}`)
+      h('h4', cohortName(cohort.name))
     ]),
     h(Tabs, {tabs: {
       Details: h(CohortDetails, {cohort, mutate}),

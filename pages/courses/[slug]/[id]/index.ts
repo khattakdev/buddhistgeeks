@@ -31,6 +31,7 @@ import { PrismaClient } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { AccentImg } from 'components/Images'
 import { TodoList } from 'components/TodoList'
+import { cohortName } from 'src/utils'
 
 const COPY = {
   curriculumTab: "Curriculum",
@@ -251,7 +252,7 @@ export const Cohort = (props: {
       h('h3', {}, h(Link, {
         href:'/courses/[slug]/[id]/cohorts/[cohortId]',
         as:  `/courses/${props.slug}/${props.cohort.course}/cohorts/${id}`
-      }, h('a', {style: {textDecoration: 'none'}}, isNaN(parseInt(props.cohort.name)) ? props.cohort.name : `Cohort #${props.cohort.name}`))),
+      }, h('a', {style: {textDecoration: 'none'}}, cohortName(props.cohort.name)))),
       h(Box, {style: {color: colors.textSecondary}, gap: 4}, [
         h('strong', cohortPrettyDate(props.cohort.start_date, props.cohort.completed)),
         h('div', [
