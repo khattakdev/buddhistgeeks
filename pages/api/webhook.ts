@@ -52,7 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               where: {id: cohortId},
               include: {
                 discourse_groups: true,
-                people: {select:{email:true}},
+                cohort_facilitators: {select:{people:{select:{email:true}}}},
                 courses: {
                   select: {
                     course_groupTodiscourse_groups: true,
@@ -107,12 +107,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               cohort_forum_url: `${DISCOURSE_URL}/session/sso?return_path=/c/${cohort.category_id}`,
               get_started_topic_url: `${DISCOURSE_URL}/t/${gettingStarted.id}`
             }),
-            sendEnrollNotificationEmaill(cohort.people.email, {
+            Promise.all([cohort.cohort_facilitators.map(async (f) => person && cohort && sendEnrollNotificationEmaill(f.people.email, {
               learner: person.display_name || person.username,
               course: cohort.courses.name,
               cohort_page_url: `https://hyperlink.academy/courses/${cohort.courses.slug}/${cohort.course}/cohorts/${cohort.id}`,
               cohort_forum_url: `${DISCOURSE_URL}/session/sso?return_path=/c/${cohort.category_id}`,
-            })
+            }))])
           ])
           break
         }

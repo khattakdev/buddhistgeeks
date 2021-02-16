@@ -109,6 +109,16 @@ export const courseDataQuery = (id:number) => prisma.courses.findUnique({
             name: true
           }
         },
+        cohort_facilitators: {
+          select: {
+            facilitator: true,
+            people:{
+              select:{
+                display_name: true,
+                username: true
+              }
+          }}
+        },
         people: {
           select: {
             display_name: true,

@@ -26,13 +26,13 @@ async function postTopic(req:Request) {
   let cohort = await prisma.course_cohorts.findUnique({
     where: {id: cohortId},
     select:{
-      facilitator: true,
+      cohort_facilitators: true,
       id: true,
       category_id: true,
       courses: {select: {id: true, slug: true}}}
   })
   if(!cohort) return {status:404, result: `ERROR: Cannot find cohort ${cohortId} in course ${courseId}`} as const
-  if(cohort.facilitator !== user.id) return {status:401, result:`ERROR: User is not facilitator of cohort`} as const
+  if(!cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id)) return {status:401, result:`ERROR: User is not facilitator of cohort`} as const
 
   let topic = await createTopic({
     title: msg.title,

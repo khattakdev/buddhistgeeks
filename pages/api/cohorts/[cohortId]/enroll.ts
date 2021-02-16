@@ -42,9 +42,7 @@ async function enroll (req: Request) {
       where: {id: cohortId},
       include: {
         discourse_groups: true,
-        people: {
-          select:{email: true}
-        },
+        cohort_facilitators:{select:{people:{select:{email: true}}}},
         courses: {
           select: {
             course_groupTodiscourse_groups: true,
@@ -106,12 +104,12 @@ async function enroll (req: Request) {
         cohort_forum_url: `${DISCOURSE_URL}/session/sso?return_path=/c/${cohort.category_id}`,
         get_started_topic_url: `${DISCOURSE_URL}/t/${gettingStarted.id}`
       }),
-      sendEnrollNotificationEmaill(cohort.people.email, {
-        learner: user.display_name || user.username,
+      Promise.all([cohort.cohort_facilitators.map(async (f) => person && cohort && sendEnrollNotificationEmaill(f.people.email, {
+        learner: person.display_name || person.username,
         course: cohort.courses.name,
-        cohort_page_url: `${origin}/courses/${cohort.courses.slug}/${cohort.course}/cohorts/${cohort.id}`,
+        cohort_page_url: `https://hyperlink.academy/courses/${cohort.courses.slug}/${cohort.course}/cohorts/${cohort.id}`,
         cohort_forum_url: `${DISCOURSE_URL}/session/sso?return_path=/c/${cohort.category_id}`,
-      })
+      }))])
     ])
     return {
       status: 200,
@@ -162,7 +160,8 @@ async function unenroll (req: Request) {
   let [cohort] = await Promise.all([
     prisma.course_cohorts.findUnique({
       where: {id: cohortId},
-      include: {
+      select: {
+        cohort_facilitators: true,
         courses:{
           select:{
             name: true
@@ -179,7 +178,7 @@ async function unenroll (req: Request) {
     }),
   ])
   if(!cohort) return {status:404, result:"ERROR: no cohort found with id: "+cohortId} as const
-  if(user.id !== cohort.facilitator) return {status:401, result:"ERROR: user is not facilitator of this cohort"} as const
+  if(!cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id)) return {status:401, result:`ERROR: User is not facilitator of cohort`} as const
 
   let person = cohort.people_in_cohorts.find(p=>p.person===msg.person)
   if(!person) return {status:404, result: "ERROR: User is not in cohort"} as const

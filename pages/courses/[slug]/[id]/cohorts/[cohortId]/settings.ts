@@ -23,7 +23,7 @@ const CohortSettingsPage= (props: Extract<Props, {notFound:false}>) => {
   useEffect(()=>{
     if(!props.cohort || user === undefined) return
     else if(user===false) router.push('/')
-    else if(props.cohort.facilitator!== user.id) router.push('/dashboard')
+    else if(!!props.cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id)) router.push('/dashboard')
   },[user, props.cohort])
   if(!cohort) return h(PageLoader)
   return h(Box, {gap:64}, [

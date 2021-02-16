@@ -34,7 +34,7 @@ async function updateCohort(req:Request) {
     where:{id:cohortId},
     select: {
       name: true,
-      facilitator: true,
+      cohort_facilitators: true,
       completed: true,
       live: true,
       start_date: true,
@@ -50,7 +50,7 @@ async function updateCohort(req:Request) {
       }
     }})
   if(!cohort) return {status: 404, result: `No cohort with id ${cohortId} found`} as const
-  if(cohort.facilitator !== user.id) return {status: 401, result: "ERROR: user is not a facilitator of this course"} as const
+  if(!cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id)) return {status:401, result:`ERROR: User is not facilitator of cohort`} as const
 
   let completed
   if(msg.data.completed && !cohort.completed) {
@@ -111,7 +111,9 @@ export const cohortDataQuery = async (id: number, userId?: string)=>{
       id: true,
       live: true,
       completed: true,
-      facilitator: true,
+      cohort_facilitators: {
+        select:{facilitator: true, people:{select:{display_name: true, username: true, bio: true, pronouns: true}}}
+      },
       people: {
         select: {display_name: true, username: true, bio: true, pronouns: true}
       },
@@ -154,14 +156,14 @@ export const cohortDataQuery = async (id: number, userId?: string)=>{
   })
   if(!data) return
 
-  let enrolled = data.people_in_cohorts.find(x=>x.person === userId) || data.facilitator === userId
-  let isFacilitator = data.facilitator  === userId
+  let enrolled = data.people_in_cohorts.find(x=>x.person === userId)
+  let isFacilitator = data.cohort_facilitators.find(f=>f.facilitator === userId)
 
   let cohort_events = data.cohort_events
     .filter(c=> c.everyone ||
-      data?.facilitator === userId ||
+      isFacilitator ||
       (enrolled  && c.events.people_in_events.find(p=>p.people.id === userId)))
-    .map(event => produce(event, (e)=>{if(!enrolled) e.events.location = ''}))
+    .map(event => produce(event, (e)=>{if(!enrolled && !isFacilitator) e.events.location = ''}))
   let people_in_cohorts = data.people_in_cohorts.map(person => produce(person, (p)=>{if(!isFacilitator)p.people.email = ''}))
   return {...data, cohort_events, people_in_cohorts}
 }

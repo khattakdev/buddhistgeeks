@@ -11,7 +11,7 @@ import { Course, useCourseData, useUserData } from 'src/data'
 import { PageLoader } from 'components/Loader'
 import { Box, Seperator, LabelBox, FormBox } from 'components/Layout'
 import { Info, Error, Select, Input, Textarea, CheckBox } from 'components/Form'
-import { Primary, Destructive, Secondary, BackButton } from 'components/Button'
+import { Primary, Destructive, Secondary, BackButton, IconButton } from 'components/Button'
 import {Discounts} from 'components/pages/courses/settings/Discounts'
 import ErrorPage from 'pages/404'
 import { useDebouncedEffect, useFormData } from 'src/hooks'
@@ -24,6 +24,8 @@ import { DeleteTemplateResult } from 'pages/api/courses/[id]/templates/[template
 import { getTaggedPost } from 'src/discourse'
 import { Cohort } from '..'
 import { IconPicker } from 'components/IconPicker'
+import { Cross } from 'components/Icons'
+import { Pill } from 'components/Pill'
 
 const COPY = {
   cancelCohort: h('p.textSecondary', [
@@ -80,7 +82,7 @@ function CohortSettings(props:{course:Course, mutate: (course:Course)=>void}) {
     h(Box, [
       h('h3', "All Cohorts"),
       h(Box, {gap:32}, props.course.course_cohorts.map((cohort)=>{
-        let facilitating = user && cohort.facilitator=== user.id
+        let facilitating = !!cohort.cohort_facilitators.find(f=>user&&f.facilitator === user.id)
         return h(Cohort, {
           cohort,
           enrolled: false,
@@ -95,8 +97,8 @@ function CohortSettings(props:{course:Course, mutate: (course:Course)=>void}) {
 }
 
 //feature to add a new cohort to a course
-export const AddCohort = (props:{course:Course, mutate:(c:Course)=>void})=> {
-  let [newCohort, setNewCohort] = useState({start_date: '', start_time: '', facilitator: ''})
+const AddCohort = (props:{course:Course, mutate:(c:Course)=>void})=> {
+  let [newCohort, setNewCohort] = useState({start_date: '', start_time: '', facilitators: [] as string[]})
   let [status, callCreateCohort] = useApi<CreateCohortMsg, CreateCohortResponse>([newCohort])
 
   let timezone = new Date().toLocaleDateString('en-us',{timeZoneName:"short"}).split(', ')[1]
@@ -108,7 +110,7 @@ export const AddCohort = (props:{course:Course, mutate:(c:Course)=>void})=> {
     let time = newCohort.start_time.split(':').map(x=>parseInt(x))
     let start = new Date(date[0], date[1] -1, date[2], time[0], time[1])
 
-    let res = await callCreateCohort(`/api/cohorts`, {courseId: props.course.id, facilitator:newCohort.facilitator, start: start.toISOString()})
+    let res = await callCreateCohort(`/api/cohorts`, {courseId: props.course.id, facilitators:newCohort.facilitators, start: start.toISOString()})
     if(res.status === 200) props.mutate({
         ...props.course,
         course_cohorts: [...props.course.course_cohorts, {...res.result, people_in_cohorts:[], courses: {name: props.course.name}}]
@@ -123,13 +125,24 @@ export const AddCohort = (props:{course:Course, mutate:(c:Course)=>void})=> {
       h('h4', "Facilitator"),
       h(Select, {
         required: true,
-        onChange: (e:React.ChangeEvent<HTMLSelectElement>)=> setNewCohort({...newCohort, facilitator: e.currentTarget.value})
+        onChange: (e:React.ChangeEvent<HTMLSelectElement>)=> setNewCohort({...newCohort, facilitators: [...newCohort.facilitators, e.currentTarget.value]})
       }, [
         h('option', {value: ''}, "Select a facilitator"),
         ...(props.course.course_maintainers.map(maintainer => {
           return h('option', {value: maintainer.maintainer}, maintainer.people.display_name || maintainer.people.username)
         })||[])
-      ])
+      ]),
+      h(Box, {h:true}, newCohort.facilitators.map(f=>{
+        let facilitator = props.course.course_maintainers.find(m=>m.maintainer === f)
+        if(!facilitator) return null
+        return h(Pill, {}, h(Box, {h:true, gap:4}, [
+          h('p', facilitator.people.display_name || facilitator.people.username),
+          h(IconButton, {onClick:e=>{
+            e.preventDefault()
+            setNewCohort({...newCohort, facilitators:newCohort.facilitators.filter(f2=>f2!==f)})
+          }}, h(Cross, {width: 10, height:10}))
+        ]))
+      }))
     ]),
     h(Box, {h: true, gap: 32}, [
     h(LabelBox, {gap:8}, [
@@ -158,12 +171,12 @@ export const AddCohort = (props:{course:Course, mutate:(c:Course)=>void})=> {
       status,
       type: 'submit',
       success: status === 'success',
-      disabled: !newCohort.start_date || !newCohort.facilitator
+      disabled: !newCohort.start_date || newCohort.facilitators.length===0
     }, 'Add a new Cohort'),
   ])
 }
 
-export const Invites = (props:{course:Course, mutate: (c:Course) => void})=> {
+const Invites = (props:{course:Course, mutate: (c:Course) => void})=> {
   let [emailOrUsername, setEmailOrUsername] = useState('')
   let [invite_only, setInviteOnly] = useState(props.course.invite_only)
   let [valid, setValid] = useState<null | boolean>(null)
@@ -318,11 +331,27 @@ const EditDetails = (props: {course: Course, mutate:(course:Course)=>void}) => {
         reset()
       }}, "Discard Changes"),
         h(Primary, {type: 'submit', disabled: !changed, status}, 'Save Changes')
+    ]),
+    h(Maintainers, props)
+  ])
+}
+
+function Maintainers (props: {course: Course, mutate: (c: Course)=>void}) {
+  let [newMaintainer, setNewMaintainer] = useState('')
+  return h(Box, [
+    h('h3', "Maintainers"),
+    ...props.course.course_maintainers.map(m=>{
+      return m.people.display_name || m.people.username
+    }),
+    h('h4', "Add a maintainer"),
+    h(FormBox, [
+      h(Input, {value: newMaintainer, onChange:(e)=>setNewMaintainer(e.currentTarget.value)}),
+      h(Primary, {type:'submit'}, "Add")
     ])
   ])
 }
 
-export function CourseTemplates (props: {course: Course, mutate: (c:Course)=>void}) {
+function CourseTemplates (props: {course: Course, mutate: (c:Course)=>void}) {
   return h(Box, {gap: 32}, [
     h(Box, [
       h('p', `Each cohort comes with its own community space, and templates to help you populate its structure with topics.`),
