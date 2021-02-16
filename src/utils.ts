@@ -38,6 +38,11 @@ export const getStripe = () => {
   return stripePromise
 }
 
+export const sortByDateAndName = (a:{start_date: string, name: string}, b:{start_date:string, name: string}) => {
+  if(a.start_date === b.start_date) return a.name > b.name ? 1 : -1
+  return a.start_date > b.start_date ? 1 : -1
+}
+
 export const cohortName = (name: string)=>isNaN(parseInt(name)) ? name  :`Cohort #${name}`
 
 export function formHelper<S>(state:S, setState:(s:S)=>void) {

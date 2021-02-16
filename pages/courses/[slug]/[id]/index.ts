@@ -31,7 +31,7 @@ import { PrismaClient } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { AccentImg } from 'components/Images'
 import { TodoList } from 'components/TodoList'
-import { cohortName } from 'src/utils'
+import { cohortName, sortByDateAndName } from 'src/utils'
 
 const COPY = {
   curriculumTab: "Curriculum",
@@ -58,15 +58,17 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
 
   if(!course) return h(PageLoader)
 
-  let activeCohorts = course?.course_cohorts.filter(c => {
-    if(!user) return false
-    return c.completed === null && (!!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)
-      || c.people_in_cohorts
-        .find(p => p.people.id === (user ? user.id : undefined)))
-  }) || []
+  let activeCohorts = course.course_cohorts
+    .filter(c => {
+      if(!user) return false
+      return c.completed === null && (!!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)
+        || c.people_in_cohorts
+          .find(p => p.people.id === (user ? user.id : undefined)))
+    })
+    .sort(sortByDateAndName)
 
   let enrolled = activeCohorts.filter(c=>!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)).length > 0
-  let upcomingCohorts = course.course_cohorts.filter(c=> (new Date(c.start_date) > new Date()) && c.live)
+  let upcomingCohorts = course.course_cohorts.filter(c=> (new Date(c.start_date) > new Date()) && c.live).sort(sortByDateAndName)
 
   let isMaintainer = !!(course?.course_maintainers.find(maintainer => user && maintainer.maintainer === user.id))
   let invited = !!userCohorts?.invited_courses.find(course=>course.id === props.course.id )
@@ -203,7 +205,7 @@ const Cohorts = (props:{cohorts: Course['course_cohorts'], user: string, slug: s
   .filter(c=>{
     if(c.live) return true
     return !!c.cohort_facilitators.find(f=>f.facilitator===props.user)
-  }).sort((a, b) => new Date(a.start_date) > new Date(b.start_date) ? 1 : -1)
+  }).sort(sortByDateAndName)
     .reduce((acc, cohort)=>{
       let enrolled = !!cohort.people_in_cohorts.find(p => p.people.id === props.user)
       let facilitating = !!cohort.cohort_facilitators.find(f=>f.facilitator === props.user)
