@@ -54,7 +54,7 @@ async function handler (req: Request) {
   ])
   if(!course) return {status: 400, result: "ERROR: no course found with that id"} as const
   for(let f in facilitators){
-    if(!facilitators[f]) return {status:404, result: "ERROR: no user with username "+msg.facilitators[f]}
+    if(!facilitators[f]) return {status:404, result: "ERROR: no user with username "+msg.facilitators[f]} as const
   }
 
   let groupName = course.slug + '-' + course.course_cohorts.length
@@ -125,6 +125,7 @@ async function handler (req: Request) {
           name: groupName
         }
       },
+      people: {connect:{id:facilitators[0]?.id as string}}, // REMOVE WHEN WE DROP THIS COLUMN
       start_date: msg.start,
       courses: {
         connect: {
