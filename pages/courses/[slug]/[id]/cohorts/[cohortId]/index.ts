@@ -139,6 +139,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
                 : h(EnrollButton, {
                   id: cohort.id,
                   course: course.id,
+                  slug: course.slug,
                   max_size: course.cohort_max_size,
                   learners: cohort.people_in_cohorts.length,
                   invited: !course.invite_only || invited}, "Join this cohort"),

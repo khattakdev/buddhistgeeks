@@ -9,10 +9,12 @@ import { Box } from "components/Layout"
 import { Modal } from "components/Modal"
 import { Primary } from "components/Button"
 import { getStripe } from 'src/utils'
+import Link from 'next/link'
 
 export const EnrollButton:React.FC<{
   id:number,
   course: number,
+  slug: string,
   max_size: number,
   learners: number,
   invited: boolean
@@ -44,7 +46,8 @@ export const EnrollButton:React.FC<{
     ]),
     h(Primary, {onClick, status, disabled: !props.invited || (props.max_size !==0 && props.max_size === props.learners)},
       props.children as React.ReactElement),
-    props.max_size === 0 ? null : props.max_size > props.learners
+    !props.invited ? h('span.accentRed', ["This course is invite only, see the ", h(Link, {href:`/courses/${props.slug}/${props.course}`}, h('a', 'curriculum')), " for details"])
+    : props.max_size === 0 ? null : props.max_size > props.learners
       ? h('span.accentSuccess', `${props.max_size - props.learners} ${props.max_size - props.learners === 1 ? 'spot' : 'spots'} left!`)
       : h('span.accentRed', `Sorry! This cohort is full.`)
   ])
