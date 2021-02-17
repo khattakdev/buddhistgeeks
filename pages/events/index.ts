@@ -10,7 +10,7 @@ export default function Events(props:Props) {
   let [pastEvents, upcomingEvents] = props.events
     .sort((a, b)=>sortByDateAndName(a.events, b.events))
     .reduce((acc, event)=>{
-      if(new Date(event.events.start_date) < new Date()) acc[0].push(event)
+      if(new Date(event.events.end_date) < new Date()) acc[0].push(event)
       else acc[1].push(event)
       return acc
   }, [[],[]] as Array<typeof props.events>)
