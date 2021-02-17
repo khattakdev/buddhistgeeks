@@ -8,19 +8,18 @@ import {WatchCourseInline} from 'components/Course/WatchCourse'
 import { CourseCohortCard, ClubCohortCard} from 'components/Cards/CohortCard'
 import styled from '@emotion/styled'
 import { Pill } from 'components/Pill'
+import { sortByDateAndName } from 'src/utils'
 
 export function CourseAndClubList(props:{initialData:Courses, type: "club" | "course"}) {
   let {data: allCourses} = useCourses({initialData:props.initialData, type: props.type})
 
   let upcoming = allCourses?.courses
-  .filter(course=> !!course.course_cohorts.filter(c=> course.cohort_max_size === 0 || course.cohort_max_size !==c.people_in_cohorts.length)[0])
-  .sort((a,b)=>{
-      let upcomingCohortA = a.course_cohorts.filter(c=>new Date(c.start_date) > new Date())[0]
-      let upcomingCohortB = b.course_cohorts.filter(c=>new Date(c.start_date) > new Date())[0]
-
-      if(upcomingCohortA.start_date === upcomingCohortB.start_date) return a.name > b.name ? 1 : -1
-      return new Date(upcomingCohortA.start_date) < new Date(upcomingCohortB?.start_date) ? -1 : 1
-  })
+  .flatMap(course=>course.course_cohorts
+    .filter(c=> course.cohort_max_size === 0 || course.cohort_max_size !==c.people_in_cohorts.length)
+    .map(cohort=>{
+      return {cohort, course}
+    }))
+    .sort(({cohort:a}, {cohort:b})=>sortByDateAndName(a, b))
 
   let [min, mobileMin] = props.type === 'club' ? [290, 290] : [400, 320]
   let CohortCardComponent = props.type === 'club' ? ClubCohortCard : CourseCohortCard
@@ -54,10 +53,8 @@ export function CourseAndClubList(props:{initialData:Courses, type: "club" | "co
     h(Box, {gap: 16}, [
       h('h3.textSecondary', "Upcoming " + (props.type === 'club' ? "Clubs" : "Cohorts")),
       h(FlexGrid, {min , mobileMin},
-        upcoming?.flatMap(course => {
-          return course.course_cohorts.map(cohort=>{
-            return h(CohortCardComponent, {...cohort, course})
-          })
+        upcoming?.map(({cohort, course})=> {
+          return h(CohortCardComponent, {...cohort, course})
         })),
     ]),
     // END Upcoming Club or Course COHORTS
