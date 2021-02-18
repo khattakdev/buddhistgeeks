@@ -17,6 +17,7 @@ import {Primary, Secondary, SmallLinkButton} from 'components/Button'
 import { EnrolledCohort } from 'components/pages/dashboard/EnrolledCohort'
 import { Calendar } from 'components/Icons'
 import { EventCard } from 'components/Cards/EventCard'
+import { sortByDateAndName } from 'src/utils'
 
 const COPY = {
   coursesHeader: "All Courses",
@@ -46,11 +47,10 @@ const Dashboard = () => {
   let completedCohorts = enrolledThings.course_cohorts.filter(c=> c.completed)
   let activeCohorts = enrolledThings.course_cohorts
     .filter(c=>!c.completed)
-    .sort((a, b)=>{
-      if(new Date(a.start_date) < new Date(b.start_date)) return -1
-      return 1
-    })
-  let upcomingEvents = enrolledThings.events.filter(e=>e.events.end_date>new Date().toISOString())
+    .sort(sortByDateAndName)
+  let upcomingEvents = enrolledThings.events
+    .filter(e=>e.events.end_date>new Date().toISOString())
+    .sort((a,b)=>sortByDateAndName(a.events, b.events))
   let [clubs, courses] = userCourses.maintaining_courses.reduce((acc, c)=> {
     acc[c.type === 'club' ? 0 : 1].push(c)
     return acc
