@@ -150,6 +150,7 @@ async function updateEvent(req:Request) {
                 end_date: msg.data.end_date,
                 description: msg.data.description,
                 name: msg.data.name,
+                location: msg.data.location
               }
             }
           }
