@@ -134,7 +134,7 @@ const CohortPage = (props: Extract<Props, {notFound:false}>) => {
         h(Sidebar, {} , [
           h(StickyWrapper, [
             h(Box, {gap: 32}, [
-              inCohort || isStarted || isFacilitator ? null : h(CourseDetails, {course}),
+              inCohort || isStarted || isFacilitator ? null : h(CourseDetails, {course, cohort_start_date: cohort.start_date}),
               inCohort || isStarted || isFacilitator ? null
                 : h(EnrollButton, {
                   id: cohort.id,

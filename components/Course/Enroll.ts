@@ -9,9 +9,11 @@ import { useLocalDiscounts, setDiscounts } from 'src/clientData'
 import { callApi } from 'src/apiHelpers'
 import { GetDiscountResult } from 'pages/api/discounts/[code]'
 import Text from 'components/Text'
+import { prettyDate } from 'src/utils'
 
 type Props = {
   course: Course
+  cohort_start_date?: string,
 }
 
 const Enroll:React.FC<Props> = (props) => {
@@ -41,6 +43,7 @@ const Enroll:React.FC<Props> = (props) => {
       h(Cost, {discounted: !!discount}, '$' + props.course?.cost),
     ]),
     h(Box, {gap: 8, style:{color: colors.textSecondary}}, [
+      !props.cohort_start_date ? null : h('b', `Starts ${prettyDate(props.cohort_start_date)}`),
       h('b', props.course?.duration),
       props.course?.cohort_max_size === 0 ? null : h('b', `Up to ${props.course?.cohort_max_size} learners`),
       h(Box, {gap: 4}, [
