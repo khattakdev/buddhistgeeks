@@ -47,8 +47,12 @@ export default async function getUserEvents(req: NextApiRequest, res: NextApiRes
     prisma.course_cohorts.findMany({
       where:{
         live: true,
-        people:{
-          calendar_id: calendar_ID
+        cohort_facilitators: {
+          some: {
+            people:{
+              calendar_id: calendar_ID
+            }
+          }
         }
       },
       select: {
