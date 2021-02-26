@@ -26,20 +26,29 @@ async function inviteToCourse(req:Request) {
   let courseData = await prisma.courses.findUnique({where: {id: courseID}, select:{name: true, slug:true}})
   if(!courseData) return {status:404, result: `ERROR: no course found with id ${courseID}`}
 
-  await prisma.course_invites.create({data: {
-    email,
-    courses: {
-      connect: {
-        id: courseID
+  await Promise.all([
+    prisma.course_invites.upsert({
+      where:{course_email:{
+        course: courseID,
+        email
+      }},
+      update:{},
+      create: {
+        email,
+        courses: {
+          connect: {
+            id: courseID
+          }
+        }
       }
-    }
-  }})
+    }),
 
-  await sendInviteToCourseEmail(email, {
-    course_url: `https://hyperlink.academy/courses/${courseData.slug}/${courseID}`,
-    course_name: courseData.name,
-    name
-  })
+    sendInviteToCourseEmail(email, {
+      course_url: `https://hyperlink.academy/courses/${courseData.slug}/${courseID}`,
+      course_name: courseData.name,
+      name
+    })
+  ])
 
   return {status: 200, result: {email}} as const
 }
