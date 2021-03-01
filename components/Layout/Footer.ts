@@ -23,8 +23,8 @@ export default function Footer(){
         ]),
         h(Box, {gap: 4}, [
           h('h4', "Technical"),
-          h(FooterLink, {href: 'https://gitlab.com/jaredpereira/hyperlink-academy'}, "Source Code"),
-          h(FooterLink, {href: 'https://gitlab.com/jaredpereira/hyperlink-academy/-/issues/new?'}, "Report a Bug"),
+          h(FooterLink, {href: 'https://gitlab.com/hyperlink-academy/app'}, "Source Code"),
+          h(FooterLink, {href: 'https://gitlab.com/hyperlink-academy/app/-/issues/new?'}, "Report a Bug"),
         ]),
         h(Box, {gap: 4}, [
           h('h4', "Policies"),
