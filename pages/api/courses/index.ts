@@ -143,12 +143,6 @@ async function createCourse(req: Request) {
           type: 'prepopulated',
           required: true
         }, {
-          content: TemplateCohortNotes,
-          name: "Notes",
-          title: "Notes",
-          type: 'prepopulated',
-          required: true
-        }, {
           content: TemplateCohortArtifact,
           name: "Artifact",
           title: "Artifact",
