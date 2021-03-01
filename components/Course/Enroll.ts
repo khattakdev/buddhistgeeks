@@ -43,7 +43,7 @@ const Enroll:React.FC<Props> = (props) => {
       h(Cost, {discounted: !!discount}, '$' + props.course?.cost),
     ]),
     h(Box, {gap: 8, style:{color: colors.textSecondary}}, [
-      !props.cohort_start_date ? null : h('b', `Starts ${prettyDate(props.cohort_start_date)}`),
+      !props.cohort_start_date ? null : h('b', `${prettyDate(props.cohort_start_date)}`),
       h('b', props.course?.duration),
       props.course?.cohort_max_size === 0 ? null : h('b', `Up to ${props.course?.cohort_max_size} learners`),
       h(Box, {gap: 4}, [

@@ -7,7 +7,7 @@ export default class MyDocument extends Document {
         <Head>
           <link rel="icon" href="/img/favicon.png"/>
           <link rel="dns-prefetch" href="//hyperlink-data.nyc3.cdn.digitaloceanspaces.com/"/>
-          <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin/>
+          <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin=''/>
           {this.props.styleTags}
         </Head>
         <body style={{
