@@ -6,7 +6,6 @@ import TemplateClubDescription from '../../../writing/TemplateClubDescription.tx
 import {getToken} from '../../../src/token'
 import { ResultType, Request, APIHandler} from '../../../src/apiHelpers'
 import TemplateCohortGettingStarted from 'writing/TemplateCohortGettingStarted.txt'
-import TemplateCohortNotes from 'writing/TemplateCohortNotes.txt'
 import TemplateCohortArtifact from 'writing/TemplateCohortArtifact.txt'
 import TemplateCohortAssignment from 'writing/TemplateCohortAssignment.txt'
 import TemplateCohortEvent from 'writing/TemplateCohortEvent.txt'
