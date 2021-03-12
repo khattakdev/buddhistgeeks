@@ -123,7 +123,7 @@ export const getServerSideProps = async ({req,res}:GetServerSidePropsContext) =>
     return {props: {courses, events}} as const
   }
 
-  res.writeHead(303, {Location: '/dashboard'})
+  res.writeHead(307, {Location: '/dashboard'})
   res.end()
   return {props:{courses:[], events:[]}}
 }

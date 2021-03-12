@@ -34,7 +34,9 @@ const Login = () => {
   let { data, mutate } = useUserData()
   let [status, callLogin] = useApi<Msg, Result>([formData], async (result)=> {
     if (redirect) {
-      if (redirect[0] !== '/' || redirect.startsWith('/sso')) return window.location.assign(redirect)
+      if (redirect[0] !== '/' || redirect.startsWith('/sso') || redirect.startsWith('/api')) {
+        return window.location.assign(redirect)
+      }
       await mutate(result)
       await router.push(redirect as string)
     }

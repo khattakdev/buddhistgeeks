@@ -40,7 +40,7 @@ export const getServerSideProps:GetServerSideProps = async ({req,res, query}) =>
 
   let {nonce} = querystring.parse(Buffer.from(sso as string, 'base64').toString())
 
-  res.writeHead(301, {
+  res.writeHead(307, {
     Location: `${DISCOURSE_URL}/session/sso_login?`
       + makeSSOPayload({
         nonce:nonce as string ,
