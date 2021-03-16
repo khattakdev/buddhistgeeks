@@ -3,6 +3,19 @@ import crypto from 'crypto'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {getToken} from 'src/token'
 
+type SSOResponse = {
+  requestID: string,
+  username: string
+  email: string
+  display_name?: string
+  user: string
+}
+
+type SSORequest = {
+  requestID: string
+}
+
+
 export default async (req:NextApiRequest,res:NextApiResponse) => {
   let token = getToken(req)
   if(!token) {
@@ -14,13 +27,15 @@ export default async (req:NextApiRequest,res:NextApiResponse) => {
   let verifySig = sign(payload)
   if(verifySig !== signature) return  {props: {error: true}}
 
-  let SSOtoken = JSON.parse(Buffer.from(payload as string, 'base64').toString())
+  let SSOtoken:SSORequest = JSON.parse(Buffer.from(payload as string, 'base64').toString())
 
-  let responsePayload = Buffer.from(JSON.stringify({
-    id: SSOtoken.id,
-    email:token.email,
+  let response:SSOResponse = {
+    requestID: SSOtoken.requestID,
+    username: token.username,
+    email: token.email,
     user: token.id
-  })).toString('base64')
+  }
+  let responsePayload = Buffer.from(JSON.stringify(response)).toString('base64')
   let responseSignature = sign(responsePayload)
 
 
