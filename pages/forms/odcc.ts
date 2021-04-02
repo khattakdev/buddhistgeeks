@@ -35,12 +35,12 @@ export default ()=>{
     h(Primary, {onClick: ()=>reset()}, "Submit another idea")
   ]) : h(Box, {ma: true, width: 640, gap:32}, [
     h(Box, [
-      h('h1', "On Deck Course Creators — welcome to Hyperlink!"),
+      h('h1', "On Deck Course Creators — Welcome to Hyperlink!"),
 	  h('p.big', ``),
       h('p.big', `If you're interested in running a course on Hyperlink, we'd love to hear what you have in mind.`),
-	  h('p.big', `we're glad to offer ODCC Fellows:`),
+	  h('p.big', `We're glad to offer ODCC Fellows:`),
 	  h('ul', [
-		  h('li', "1-hour consultation to talk about your course & get to know each other"),
+		  h('li', "Consultation to talk about your course & get to know each other"),
 		  h('li', "Priority onboarding to help you launch on Hyperlink"),
 	  ]),
       h('p.big', `Fill out this form to tell us a bit about yourself and your course. We'll get back to you soon to find a time to chat!`),
