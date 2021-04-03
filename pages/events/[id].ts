@@ -3,7 +3,7 @@ import { eventDataQuery, UpdateEventMsg, UpdateEventResult } from "pages/api/eve
 import ErrorPage from 'pages/404'
 import { InferGetStaticPropsType } from "next"
 import { dateFromDateAndTimeInputs, getStripe, prettyDate, formHelper } from 'src/utils'
-import { Box, FormBox, Seperator, Sidebar, TwoColumn } from 'components/Layout'
+import { Box, FormBox, Separator, Sidebar, TwoColumn } from 'components/Layout'
 import {colors} from 'components/Tokens'
 import Text from 'components/Text'
 import { Primary, Secondary, Destructive } from 'components/Button'
@@ -129,7 +129,7 @@ const Event = (props: Extract<Props, {notFound: false}> & {facilitating: boolean
     ]),
     h(Box, {gap:32}, [
       h(Text, {source: props.description}),
-      h(Seperator),
+      h(Separator),
       h(Box, {}, [
         h('h2', `Facilitated by ${props.people.display_name || props.people.username}`),
         h(Text, {source: props.people.bio || ''}),

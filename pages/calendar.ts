@@ -1,5 +1,5 @@
 import h from 'react-hyperscript'
-import { Box, Seperator } from "components/Layout"
+import { Box, Separator } from "components/Layout"
 import { useRef } from "react"
 import { Input } from 'components/Form'
 import { Primary } from 'components/Button'
@@ -39,7 +39,7 @@ export default function Calender(){
         }
       }, 'Copy URL' ),
     ]),
-    h(Seperator),
+    h(Separator),
     h(Box, [
       h('h3', "How to Subscribe"),
       h('div', {style:{textAlign: "left"}}, [

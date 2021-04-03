@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { InferGetStaticPropsType } from 'next'
 import styled from '@emotion/styled'
 
-import { Box, Seperator, TwoColumn, Sidebar } from 'components/Layout'
+import { Box, Separator, TwoColumn, Sidebar } from 'components/Layout'
 import {Tabs, StickyWrapper} from 'components/Tabs'
 import { colors } from 'components/Tokens'
 import Loader, { PageLoader } from 'components/Loader'
@@ -100,7 +100,7 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
                   slug: course?.slug || '',
                   cohort_max_size: course?.cohort_max_size || 0
                 }),
-                h(Seperator)]
+                h(Separator)]
             }).slice(0, -1)
           ])
           : activeCohorts.length === 0 ? null : h(Box, {padding: 32, style: {backgroundColor: colors.grey95}}, [
@@ -146,7 +146,7 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
                 enrolled,
                 upcoming:upcomingCohorts.length !== 0,
               }),
-              h(Seperator),
+              h(Separator),
               !isMaintainer ? h(WatchCourse, {id: course.id}) : h(Box, [
                 h(Box, {gap:8}, [
                   h('h3', `You maintain this ${course.type}`),
@@ -224,7 +224,7 @@ const Cohorts = (props:{cohorts: Course['course_cohorts'], user: string, slug: s
   return h(Box, {gap:32}, [
     upcomingCohorts.length === 0 ? null : h('h2', "Upcoming Cohorts"),
     ...upcomingCohorts,
-    upcomingCohorts.length === 0 || pastCohorts.length === 0 ? null : h(Seperator),
+    upcomingCohorts.length === 0 || pastCohorts.length === 0 ? null : h(Separator),
     pastCohorts.length === 0 ? null : h('h2', 'Ongoing and Past Cohorts'),
     ...pastCohorts
     ])

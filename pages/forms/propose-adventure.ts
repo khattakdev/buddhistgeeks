@@ -1,5 +1,5 @@
 import h from 'react-hyperscript'
-import { Box, FormBox, LabelBox, Seperator } from 'components/Layout'
+import { Box, FormBox, LabelBox, Separator } from 'components/Layout'
 import { Textarea, Input } from 'components/Form'
 import { useApi } from 'src/apiHelpers'
 import {SubmitFormMsg, SubmitFormResponse} from 'pages/api/submitForm'
@@ -41,7 +41,7 @@ export default ()=>{
 	  h('p.big', `We love experiments. Also, projects that are ambitious and concrete :)`),
       h('p.big', `Submit the form below, and if it's a good fit, we'll invite you to join an upcoming cohort.`),
     ]),
-    h(Seperator),
+    h(Separator),
 
     h(FormBox, {gap: 64, onSubmit}, [
       h(Box, {gap:32}, [

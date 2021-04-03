@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import Link from 'next/link'
 
 import { colors } from '../Tokens'
-import { Body, Box, Seperator} from './index'
+import { Body, Box, Separator} from './index'
 
 export default function Footer(){
   return h(FooterContainer, [
@@ -33,7 +33,7 @@ export default function Footer(){
         ]),
       ]),
       h('br'),
-      h(Seperator),
+      h(Separator),
       h('br'),
       h('p', `© Learning Futures Inc`)
     ])

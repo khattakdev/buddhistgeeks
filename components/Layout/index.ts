@@ -82,7 +82,7 @@ ${props=> props.ma ? 'margin: auto;':''}
 export const LabelBox = Box.withComponent('label')
 export const FormBox = Box.withComponent('form')
 
-export const Seperator = styled('hr')`
+export const Separator = styled('hr')`
 border: 1px dashed;
 border-bottom: none;
 border-right: none;

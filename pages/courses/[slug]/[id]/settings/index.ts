@@ -9,7 +9,7 @@ import { Tabs } from 'components/Tabs'
 import { useApi, callApi } from 'src/apiHelpers'
 import { Course, useCourseData, useUserData } from 'src/data'
 import { PageLoader } from 'components/Loader'
-import { Box, Seperator, LabelBox, FormBox } from 'components/Layout'
+import { Box, Separator, LabelBox, FormBox } from 'components/Layout'
 import { Info, Error, Select, Input, Textarea, CheckBox } from 'components/Form'
 import { Primary, Destructive, Secondary, BackButton, IconButton } from 'components/Button'
 import {Discounts} from 'components/pages/courses/settings/Discounts'
@@ -74,7 +74,7 @@ function CohortSettings(props:{course:Course, mutate: (course:Course)=>void}) {
   let {data: user} = useUserData()
   return h(Box, {gap: 32}, [
     h(AddCohort, props),
-    h(Seperator),
+    h(Separator),
     h(Box, {gap: 16}, [
       h('h3', "Cancel a Cohort"),
       COPY.cancelCohort
@@ -389,7 +389,7 @@ function CourseTemplates (props: {course: Course, mutate: (c:Course)=>void}) {
               }, h('a', {}, h(Secondary, 'Edit')))
             ])
           ]),
-          h(Seperator)
+          h(Separator)
         ]}).slice(0, -1))
   ])
 }

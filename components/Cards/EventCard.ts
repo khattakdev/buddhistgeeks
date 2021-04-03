@@ -2,7 +2,7 @@ import h from 'react-hyperscript'
 import styled from '@emotion/styled'
 import {Card} from '.'
 import { colors } from 'components/Tokens'
-import { Box, Seperator } from 'components/Layout'
+import { Box, Separator } from 'components/Layout'
 import { prettyDate } from 'src/utils'
 import Link from 'next/link'
 
@@ -17,7 +17,7 @@ export const EventCard = (props:{name: string, start_date: string, end_date: str
         h('span',  `${prettyDate(props.start_date)} @ ${start} - ${end}`),
       ]),
       new Date(props.start_date) < new Date() ? null : h(Box, {gap:8},[
-        h(Seperator),
+        h(Separator),
         h('span.textSecondary', `${props.cost === 0 ? "FREE" : '$'+props.cost}`)
       ])
     ]),

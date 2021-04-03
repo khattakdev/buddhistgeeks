@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { Input } from 'components/Form'
 import { Primary } from 'components/Button'
-import { LabelBox, FormBox, Box, Seperator } from 'components/Layout'
+import { LabelBox, FormBox, Box, Separator } from 'components/Layout'
 
 import { useApi } from 'src/apiHelpers'
 import { useUserData } from 'src/data'
@@ -69,7 +69,7 @@ export const EventForm = (props: {onChange: (e:EventInput)=>void, state:EventInp
       h('h4', "Description"),
       h(EditorWithPreview, {height: 400, ...f.description})
     ]),
-    h(Seperator),
+    h(Separator),
     h(Box, {h: true, gap: 32, width: 640, style:{gridAutoColumns: 'auto'}}, [
       h(LabelBox, {gap:8}, [
         h('h4', 'Date'),

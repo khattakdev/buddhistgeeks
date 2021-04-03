@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getTemplatesQuery } from 'pages/api/courses/[id]/templates'
 import { InferGetStaticPropsType } from 'next'
-import { Box, Seperator, FormBox, LabelBox } from 'components/Layout'
+import { Box, Separator, FormBox, LabelBox } from 'components/Layout'
 import { Secondary, Primary, BackButton } from 'components/Button'
 import { useState, Fragment } from 'react'
 import { Input } from 'components/Form'
@@ -56,7 +56,7 @@ function CohortTemplatesPages(props:Props) {
               }, h(Secondary, 'Use'))
             ])
           ]),
-          h(Seperator)
+          h(Separator)
         ]}).slice(0, -1))
   ])
 }

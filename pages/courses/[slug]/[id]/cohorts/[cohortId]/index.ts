@@ -8,7 +8,7 @@ import { InferGetStaticPropsType } from 'next'
 
 import CourseDetails from 'components/Course/Enroll'
 import { EnrollButton } from 'components/Course/EnrollButton';
-import { TwoColumn, Box, Seperator, Sidebar, WhiteContainer} from 'components/Layout'
+import { TwoColumn, Box, Separator, Sidebar, WhiteContainer} from 'components/Layout'
 import { VerticalTabs, StickyWrapper } from 'components/Tabs'
 import { Primary, Destructive, DestructiveSmallButton, Secondary, LinkButton } from 'components/Button'
 import Loader, { PageLoader } from 'components/Loader'
@@ -348,7 +348,7 @@ const MarkCohortComplete = (props:{cohort:Cohort, mutate:(c:Cohort)=>void})=> {
               "Use the ", h(Link, {href: `http://hyperlink.academy/courses/${props.cohort.courses.slug}/${props.cohort.courses.id}/cohorts/${props.cohort.id}/templates?template=Retro`}, "Retrospective template"), " to post a cohort retro in the forum." 
               ]),
             ]),
-          h(Seperator), 
+          h(Separator), 
           h('span', [
             "You can find more information about artifacts and retros in our ", h(Link, {href: `https://hyperlink.academy/manual/facilitators#facilitating-a-cohort`}, "facilitator guide"), "." 
           ]),

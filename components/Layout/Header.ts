@@ -6,7 +6,7 @@ import { useState, Fragment, useEffect, useRef } from 'react'
 
 import {colors, Mobile} from '../Tokens'
 import { Logo } from '../Icons'
-import { Box, Seperator, FormBox, LabelBox} from './index'
+import { Box, Separator, FormBox, LabelBox} from './index'
 import { useUserData } from '../../src/data'
 import { useMediaQuery } from '../../src/hooks'
 import { Textarea, Input } from '../Form'
@@ -30,7 +30,7 @@ export default function Header() {
     mobile ? h(MobileMenu, {user, mutateUser}) : h(Container, {}, [
       h(LoginButtons, {user, mutateUser}),
       !user ? null : h(FeedbackModal),
-      h(Seperator, {style:{height:"100%"}}),
+      h(Separator, {style:{height:"100%"}}),
       !user ? null : h(NavLink, {href:DISCOURSE_URL}, 'forum'),
       h(Link, {href: "/library", passHref: true}, h(NavLink, 'library')),
       h(LearnMenu)
@@ -127,11 +127,11 @@ const MobileMenu = (props:{user:any, mutateUser: any}) => {
       ])),
       !props.user ? null : h(NavLink, {href:DISCOURSE_URL}, h('b', 'forum')),
       h(Link, {href: "/library", passHref:true}, h(NavLink, {}, h('b', 'library'))),
-      h(Seperator),
+      h(Separator),
       h(Box, {gap: 16, style: {textAlign: 'right'}}, [
         h(LoginButtons, props),
       ]),
-      h(Seperator),
+      h(Separator),
       !props.user ? null : h(Feedback)
     ])
   ]))
