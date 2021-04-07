@@ -59,15 +59,15 @@ const LearnMenu = ()=>{
 }
 
 let LearnMenuItems = ()=> h('div', {style:{textAlign:'right', display:"grid"}}, [
-  h(Link, {href:"/courses"},h(LearnMenuItem, [
+  h(Link, {href:"/courses", passHref: true},h(LearnMenuItem, [
     h('b.mono', 'courses'),
     h('p', "structured deep learning")
   ])),
-  h(Link, {href:"/clubs"}, h(LearnMenuItem, [
+  h(Link, {href:"/clubs", passHref: true}, h(LearnMenuItem, [
     h('b.mono', 'clubs'),
     h('p', "social peer learning")
   ])),
-  h(Link, {href:"/events"}, h(LearnMenuItem, [
+  h(Link, {href:"/events", passHref: true}, h(LearnMenuItem, [
     h('b.mono', 'events'),
     h('p', "single sessions")
   ])),
@@ -77,6 +77,9 @@ let LearnMenuItem = styled('a')`
 &:hover {
 background-color: ${colors.accentLightBlue};
 cursor: pointer;
+}
+&:visited {
+color:${colors.textSecondary};
 }
 
 color:${colors.textSecondary};

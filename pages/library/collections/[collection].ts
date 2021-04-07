@@ -30,7 +30,7 @@ function LibraryCollections(props:Extract<Props, {notFound: false}>){
       .sort((a, b)=>{
         return new Date(a.date) < new Date(b.date) ? 1 : -1
       })
-      .map(p=>h(Link, {href:p.path}, h(Card, {style:{height:'min-content'}}, [
+      .map(p=>h(Link, {href:p.path, passHref: true}, h(Card, {style:{height:'min-content'}}, [
         h(Box, {gap: 16},[
           h(Box, {gap: 8}, [
             h('h3', p.title),
