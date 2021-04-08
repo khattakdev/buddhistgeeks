@@ -118,7 +118,7 @@ const CoursePage = (props:Extract<Props, {notFound: false}>) => {
           ]),
       ]),
       h(Tabs, {tabs: {
-        [COPY.curriculumTab]:  h(Box, [
+        [COPY.curriculumTab]:  h(Box, {style:{wordBreak: 'break-word'}}, [
           isMaintainer ? h(COPY.updateCurriculum, {id: props.content.id}) : null,
           h(Text, {source: props.content.text})
         ]),
