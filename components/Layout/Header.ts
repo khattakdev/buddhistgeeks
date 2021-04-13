@@ -257,6 +257,9 @@ grid-template-columns: auto auto;
 height: 32px;
 padding-bottom: 64px;
 align-items: center;
+max-width: 1024px;
+width:100%;
+margin: auto auto;
 
 ${Mobile} {
   padding-bottom: 32px ;
