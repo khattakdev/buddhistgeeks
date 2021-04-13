@@ -8,8 +8,31 @@ import { Spacing, colors, Widths, Mobile, Tablet} from '../Tokens'
 import {GlobalStyleSheet} from './GlobalStyleSheet'
 import Header from './Header'
 import Footer from './Footer'
+import { useRouter } from 'next/router'
+
 
 const Layout:React.SFC = (props)=>{
+  let router = useRouter()
+  if (router.pathname=== '/create') { 
+    return h(Fragment, [
+      h(Global, {styles: GlobalStyleSheet}),
+      h(Head, {children: []}, h('link', {
+        href:"https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
+        rel:"stylesheet"
+      })),
+      h(PageWrapper, [
+        h(LandingBody, {}, [
+          h(LandingHeaderWrapper, [
+            h(Header, []),
+          ]),
+          props.children as React.ReactElement,
+        ]),
+
+        h(Footer)
+      ])
+    ])
+  }
+console.log(router.pathname)
   return h(Fragment, [
     h(Global, {styles: GlobalStyleSheet}),
     h(Head, {children: []}, h('link', {
@@ -53,6 +76,21 @@ padding: 24px;
 }
 `
 
+export const LandingBody = styled('div')`
+max-width: 100vw;
+width: 100%;
+padding: 0;
+margin: 0;
+box-sizing: border-box;
+`
+
+export const LandingHeaderWrapper = styled('div')`
+padding: 32px 32px 0 32px;
+
+${Mobile} {
+  padding: 8px 24px 0 24px;
+}
+`
 
 export const Box = styled('div')<{
   gap?: Spacing,
@@ -95,6 +133,35 @@ display: grid;
 grid-template-columns: 2fr 1fr;
 grid-column-gap: 64px;
 grid-row-gap: 32px;
+${Tablet} {
+grid-template-columns: auto;
+}
+`
+
+export const TwoColumnEven = styled('div')`
+display: grid;
+grid-template-columns: 1fr 1fr;
+grid-gap: 32px;
+
+${Tablet} {
+grid-template-columns: auto;
+}
+`
+
+export const ThreeColumn = styled('div')`
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+grid-gap: 32px;
+
+${Tablet} {
+grid-template-columns: auto;
+}
+`
+
+export const FourColumn = styled('div')`
+display: grid;
+grid-template-columns: 1fr 1fr 1fr 1fr;
+grid-gap: 32px;
 
 ${Tablet} {
 grid-template-columns: auto;

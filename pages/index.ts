@@ -2,7 +2,7 @@ import h from 'react-hyperscript'
 import styled from '@emotion/styled'
 import { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import Intro from 'writing/Intro.mdx'
+import Intro from 'writing/HomepageIntro.mdx'
 import { Mobile, Tablet} from 'components/Tokens'
 import { Box, Body, FlexGrid} from 'components/Layout'
 import { Primary, Secondary } from 'components/Button'
