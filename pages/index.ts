@@ -155,7 +155,15 @@ const Welcome = () => {
         h(Tagline, COPY.hyperlinkTagline),
       ]),
       h(CTAGrid, [
-        h("a", { href: "#courses" }, h(Primary, {}, COPY.registerButton)),
+        h(
+          "a",
+          { href: "#courses" },
+          h(
+            Primary,
+            { style: { background: "#636466", border: "2px solid #636466" } },
+            COPY.registerButton
+          )
+        ),
         h(NewsletterSignup),
       ]),
     ]),
@@ -204,7 +212,7 @@ const LandingContainer = styled("div")`
   background-image: url("/img/landing.png");
   background-repeat: no-repeat;
   background-position: right center;
-  background-size: 75%;
+  background-size: 50%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   height: 700px;
@@ -236,7 +244,7 @@ const Title = styled("h1")`
 
 const Tagline = styled("h3")`
   z-index: 2;
-  width: 33%;
+  width: 50%;
 
   ${Mobile} {
     padding-top: 176px;
