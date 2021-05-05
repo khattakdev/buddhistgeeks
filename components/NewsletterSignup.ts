@@ -31,6 +31,12 @@ const NewsLetter = () => {
         ),
       ]),
       h(Input, {
+        placeholder: "Your name",
+        type: "name",
+        value: email,
+        onChange: (e) => alert(e.currentTarget.value),
+      }),
+      h(Input, {
         placeholder: "Your email",
         type: "email",
         value: email,
