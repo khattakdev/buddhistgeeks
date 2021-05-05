@@ -1,37 +1,37 @@
-import h from 'react-hyperscript'
-import { useState, ReactElement } from 'react'
-import Link from 'next/link'
-import { InferGetStaticPropsType } from 'next'
-import styled from '@emotion/styled'
+import h from "react-hyperscript";
+import { useState, ReactElement } from "react";
+import Link from "next/link";
+import { InferGetStaticPropsType } from "next";
+import styled from "@emotion/styled";
 
-import { Box, Separator, TwoColumn, Sidebar } from 'components/Layout'
-import {Tabs, StickyWrapper} from 'components/Tabs'
-import { colors } from 'components/Tokens'
-import Loader, { PageLoader } from 'components/Loader'
-import { Info } from 'components/Form'
-import {Pill} from 'components/Pill'
-import Enroll from 'components/Course/Enroll'
-import Text from 'components/Text'
-import {SmallCohortCard} from 'components/Cards/SmallCohortCard'
-import {TwoColumnBanner} from 'components/Banner'
-import {Modal} from 'components/Modal'
-import { Primary, Destructive, LinkButton} from 'components/Button'
-import {WatchCourse} from 'components/Course/WatchCourse'
+import { Box, Separator, TwoColumn, Sidebar } from "components/Layout";
+import { Tabs, StickyWrapper } from "components/Tabs";
+import { colors } from "components/Tokens";
+import Loader, { PageLoader } from "components/Loader";
+import { Info } from "components/Form";
+import { Pill } from "components/Pill";
+import Enroll from "components/Course/Enroll";
+import Text from "components/Text";
+import { SmallCohortCard } from "components/Cards/SmallCohortCard";
+import { TwoColumnBanner } from "components/Banner";
+import { Modal } from "components/Modal";
+import { Primary, Destructive, LinkButton } from "components/Button";
+import { WatchCourse } from "components/Course/WatchCourse";
 
-import { getTaggedPost } from 'src/discourse'
-import {DISCOURSE_URL} from 'src/constants'
-import { useUserData, useUserCohorts, useCourseData, Course } from 'src/data'
-import { UpdateCourseMsg, UpdateCourseResponse} from 'pages/api/courses/[id]'
-import { callApi } from 'src/apiHelpers'
-import { cohortPrettyDate } from 'components/Cards/CohortCard'
-import ErrorPage from 'pages/404'
-import { courseDataQuery } from 'pages/api/courses/[id]'
-import Head from 'next/head'
-import { PrismaClient } from '@prisma/client'
-import { useRouter } from 'next/router'
-import { AccentImg } from 'components/Images'
-import { TodoList } from 'components/TodoList'
-import { cohortName, sortByDateAndName } from 'src/utils'
+import { getTaggedPost } from "src/discourse";
+import { DISCOURSE_URL } from "src/constants";
+import { useUserData, useUserCohorts, useCourseData, Course } from "src/data";
+import { UpdateCourseMsg, UpdateCourseResponse } from "pages/api/courses/[id]";
+import { callApi } from "src/apiHelpers";
+import { cohortPrettyDate } from "components/Cards/CohortCard";
+import ErrorPage from "pages/404";
+import { courseDataQuery } from "pages/api/courses/[id]";
+import Head from "next/head";
+import { PrismaClient } from "@prisma/client";
+import { useRouter } from "next/router";
+import { AccentImg } from "components/Images";
+import { TodoList } from "components/TodoList";
+import { cohortName, sortByDateAndName } from "src/utils";
 
 const COPY = {
   curriculumTab: "Curriculum",
@@ -39,373 +39,709 @@ const COPY = {
   activeCohorts: "Your Current Cohorts",
   settings: "You can edit details, create new cohorts, and more.",
   enrollButton: "Enroll in a cohort",
-  updateCurriculum: (props: {id: string}) => h(Info, [
-    `💡 You can make changes to the curriculum by editing `,
-    h('a', {href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.id}`}, `this topic`),
-    ` in the forum`
-  ])
-}
+  updateCurriculum: (props: { id: string }) =>
+    h(Info, [
+      `💡 You can make changes to the curriculum by editing `,
+      h(
+        "a",
+        { href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.id}` },
+        `this topic`
+      ),
+      ` in the forum`,
+    ]),
+};
 
-type Props = InferGetStaticPropsType<typeof getStaticProps>
+type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-const WrappedCoursePage = (props: Props)=>props.notFound ? h(ErrorPage) : h(CoursePage, props)
-export default WrappedCoursePage
+const WrappedCoursePage = (props: Props) =>
+  props.notFound ? h(ErrorPage) : h(CoursePage, props);
+export default WrappedCoursePage;
 
-const CoursePage = (props:Extract<Props, {notFound: false}>) => {
-  let {data: user} = useUserData()
-  let {data:userCohorts} = useUserCohorts()
-  let {data: course} = useCourseData(props.id, props.course || undefined)
+const CoursePage = (props: Extract<Props, { notFound: false }>) => {
+  let { data: user } = useUserData();
+  let { data: userCohorts } = useUserCohorts();
+  let { data: course } = useCourseData(props.id, props.course || undefined);
 
-  if(!course) return h(PageLoader)
+  if (!course) return h(PageLoader);
 
   let activeCohorts = course.course_cohorts
-    .filter(c => {
-      if(!user) return false
-      return c.completed === null && (!!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)
-        || c.people_in_cohorts
-          .find(p => p.people.id === (user ? user.id : undefined)))
+    .filter((c) => {
+      if (!user) return false;
+      return (
+        c.completed === null &&
+        (!!c.cohort_facilitators.find(
+          (f) => user && f.facilitator === user.id
+        ) ||
+          c.people_in_cohorts.find(
+            (p) => p.people.id === (user ? user.id : undefined)
+          ))
+      );
     })
-    .sort(sortByDateAndName)
+    .sort(sortByDateAndName);
 
-  let enrolled = activeCohorts.filter(c=>!c.cohort_facilitators.find(f=>user&&f.facilitator===user.id)).length > 0
-  let upcomingCohorts = course.course_cohorts.filter(c=> (new Date(c.start_date) > new Date()) && c.live).sort(sortByDateAndName)
+  let enrolled =
+    activeCohorts.filter(
+      (c) =>
+        !c.cohort_facilitators.find((f) => user && f.facilitator === user.id)
+    ).length > 0;
+  let upcomingCohorts = course.course_cohorts
+    .filter((c) => new Date(c.start_date) > new Date() && c.live)
+    .sort(sortByDateAndName);
 
-  let isMaintainer = !!(course?.course_maintainers.find(maintainer => user && maintainer.maintainer === user.id))
-  let invited = !!userCohorts?.invited_courses.find(course=>course.id === props.course.id )
+  let isMaintainer = !!course?.course_maintainers.find(
+    (maintainer) => user && maintainer.maintainer === user.id
+  );
+  let invited = !!userCohorts?.invited_courses.find(
+    (course) => course.id === props.course.id
+  );
 
   //Setting up the layout for the course page
-  return h('div', [
-    h(Head, {children: [
-      h('meta', {property:"og:title", content:course.name, key:"og:title"}),
-      h('meta', {property: "og:description", content: course.description, key: "og:description"}),
-      h('meta', {property: "og:image", content: course.card_image.split(',')[0], key: "og:image"}),
-      h('meta', {property: "twitter:card", content: "summary", key:"twitter:card"})
-    ]}),
-    h(Banners, {draft: course.status === 'draft', id: props.id, isMaintainer, slug: course.slug}),
+  return h("div", [
+    h(Head, {
+      children: [
+        h("meta", {
+          property: "og:title",
+          content: course.name,
+          key: "og:title",
+        }),
+        h("meta", {
+          property: "og:description",
+          content: course.description,
+          key: "og:description",
+        }),
+        h("meta", {
+          property: "og:image",
+          content: course.card_image.split(",")[0],
+          key: "og:image",
+        }),
+        h("meta", {
+          property: "twitter:card",
+          content: "summary",
+          key: "twitter:card",
+        }),
+      ],
+    }),
+    h(Banners, {
+      draft: course.status === "draft",
+      id: props.id,
+      isMaintainer,
+      slug: course.slug,
+    }),
     h(TwoColumn, [
-      h(Box, {gap: 32}, [
-        h(Box, {gap: 16}, [
-          h('h1', course?.name),
-        ]),
-        h('p.big', course?.description || ''),
+      h(Box, { gap: 32 }, [
+        h(Box, { gap: 16 }, [h("h1", course?.name)]),
+        h("p.big", course?.description || ""),
 
-        upcomingCohorts.length > 0 && (activeCohorts.length === 0)
-          ? h(Box, {padding: 32, style: {backgroundColor: colors.accentPeach}},[
-            ...upcomingCohorts.flatMap(cohort=>{
-              return [
-                h(Cohort, {
-                  cohort,
-                  enrolled: false, facilitating: false,
-                  invited,
-                  slug: course?.slug || '',
-                  cohort_max_size: course?.cohort_max_size || 0
-                }),
-                h(Separator)]
-            }).slice(0, -1)
-          ])
-          : activeCohorts.length === 0 ? null : h(Box, {padding: 32, style: {backgroundColor: colors.grey95}}, [
-            h('h3', COPY.activeCohorts),
-            ...activeCohorts.map(cohort=> h(SmallCohortCard, {
-              ...cohort,
-              facilitators: cohort.cohort_facilitators.map(f=>f.people.display_name || f.people.username),
-              courses: {
-                name: course?.name || '',
-                slug: course?.slug || '',
-              },
-              facilitating: !!cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id),
-              enrolled: !cohort.cohort_facilitators.find(f=>user&&f.facilitator===user.id)
-            }))
-          ]),
+        upcomingCohorts.length > 0 && activeCohorts.length === 0
+          ? h(
+              Box,
+              { padding: 32, style: { backgroundColor: colors.accentPeach } },
+              [
+                ...upcomingCohorts
+                  .flatMap((cohort) => {
+                    return [
+                      h(Cohort, {
+                        cohort,
+                        enrolled: false,
+                        facilitating: false,
+                        invited,
+                        slug: course?.slug || "",
+                        cohort_max_size: course?.cohort_max_size || 0,
+                      }),
+                      h(Separator),
+                    ];
+                  })
+                  .slice(0, -1),
+              ]
+            )
+          : activeCohorts.length === 0
+          ? null
+          : h(Box, { padding: 32, style: { backgroundColor: colors.grey95 } }, [
+              h("h3", COPY.activeCohorts),
+              ...activeCohorts.map((cohort) =>
+                h(SmallCohortCard, {
+                  ...cohort,
+                  facilitators: cohort.cohort_facilitators.map(
+                    (f) => f.people.display_name || f.people.username
+                  ),
+                  courses: {
+                    name: course?.name || "",
+                    slug: course?.slug || "",
+                  },
+                  facilitating: !!cohort.cohort_facilitators.find(
+                    (f) => user && f.facilitator === user.id
+                  ),
+                  enrolled: !cohort.cohort_facilitators.find(
+                    (f) => user && f.facilitator === user.id
+                  ),
+                })
+              ),
+            ]),
       ]),
-      h(Tabs, {tabs: {
-        [COPY.curriculumTab]:  h(Box, {style:{wordBreak: 'break-word'}}, [
-          isMaintainer ? h(COPY.updateCurriculum, {id: props.content.id}) : null,
-          h(Text, {source: props.content.text})
-        ]),
-        [COPY.cohortTab]: h(Cohorts,{cohorts: course.course_cohorts, slug: course.slug, user: user ? user.id : '', invited, cohort_max_size: course?.cohort_max_size || 0}),
-        Facilitators: h(Box, {gap:32}, course.course_maintainers.map(maintainer=>{
-          return h(Box, {}, [
-            h('h3', maintainer.people.display_name || maintainer.people.username),
-            !maintainer.people.link ? null : h('a', {href: maintainer.people.link}, h('b', maintainer.people.link)),
-            !maintainer.people.bio ? null : h(Box, {width: 640}, h(Text, {source: maintainer.people.bio}))
-          ])
-        }))
-      }}),
+      h(Tabs, {
+        tabs: {
+          [COPY.curriculumTab]: h(Box, { style: { wordBreak: "break-word" } }, [
+            isMaintainer
+              ? h(COPY.updateCurriculum, { id: props.content.id })
+              : null,
+            h(Text, { source: props.content.text }),
+          ]),
+          [COPY.cohortTab]: h(Cohorts, {
+            cohorts: course.course_cohorts,
+            slug: course.slug,
+            user: user ? user.id : "",
+            invited,
+            cohort_max_size: course?.cohort_max_size || 0,
+          }),
+          Facilitators: h(
+            Box,
+            { gap: 32 },
+            course.course_maintainers.map((maintainer) => {
+              return h(Box, {}, [
+                h(
+                  "h3",
+                  maintainer.people.display_name || maintainer.people.username
+                ),
+                !maintainer.people.link
+                  ? null
+                  : h(
+                      "a",
+                      { href: maintainer.people.link },
+                      h("b", maintainer.people.link)
+                    ),
+                !maintainer.people.bio
+                  ? null
+                  : h(
+                      Box,
+                      { width: 640 },
+                      h(Text, { source: maintainer.people.bio })
+                    ),
+              ]);
+            })
+          ),
+        },
+      }),
       h(Sidebar, [
         h(StickyWrapper, [
-          h(Enroll, {course}, [
+          h(Enroll, { course }, [
             h(Box, [
               h(EnrollStatus, {
                 courseId: course.id,
                 courseSlug: course.slug,
-                draft:course.status==='draft',
+                draft: course.status === "draft",
                 maintainer: isMaintainer,
-                inviteOnly:course.invite_only,
+                inviteOnly: course.invite_only,
                 invited,
                 loggedIn: !!user,
                 enrolled,
-                upcoming:upcomingCohorts.length !== 0,
+                upcoming: upcomingCohorts.length !== 0,
               }),
               h(Separator),
-              !isMaintainer ? h(WatchCourse, {id: course.id}) : h(Box, [
-                h(Box, {gap:8}, [
-                  h('h3', `You maintain this ${course.type}`),
-                  h('p.textSecondary', COPY.settings),
-                ]),
-                h(Link, {href:'/courses/[slug]/[id]/settings', as:`/courses/${course.slug}/${course.id}/settings`}, h(Destructive, 'Settings'))
-              ])
-            ])
-          ])]),
-      ])
-    ])
-  ])
-}
+              !isMaintainer
+                ? h(WatchCourse, { id: course.id })
+                : h(Box, [
+                    h(Box, { gap: 8 }, [
+                      h("h3", `You maintain this ${course.type}`),
+                      h("p.textSecondary", COPY.settings),
+                    ]),
+                    h(
+                      Link,
+                      {
+                        href: "/courses/[slug]/[id]/settings",
+                        as: `/courses/${course.slug}/${course.id}/settings`,
+                      },
+                      h(Destructive, "Settings")
+                    ),
+                  ]),
+            ]),
+          ]),
+        ]),
+      ]),
+    ]),
+  ]);
+};
 
-function EnrollStatus (props: {
-  draft:boolean,
-  maintainer:boolean,
-  inviteOnly:boolean,
-  invited:boolean,
-  loggedIn:boolean,
-  enrolled:boolean;
-  upcoming:boolean;
-  courseId:number;
-  courseSlug:string
+function EnrollStatus(props: {
+  draft: boolean;
+  maintainer: boolean;
+  inviteOnly: boolean;
+  invited: boolean;
+  loggedIn: boolean;
+  enrolled: boolean;
+  upcoming: boolean;
+  courseId: number;
+  courseSlug: string;
 }) {
   if (props.draft) {
-    if (props.maintainer) return h('span.accentRed', "Learners can't enroll in this course until you publish it!")
-    return h('span.accentRed', "This course is still a draft. You can enroll once the creator publishes it!")
+    if (props.maintainer)
+      return h(
+        "span.accentRed",
+        "Learners can't enroll in this course until you publish it!"
+      );
+    return h(
+      "span.accentRed",
+      "This course is still a draft. You can enroll once the creator publishes it!"
+    );
   }
 
-  if (props.enrolled){
-    if (props.upcoming) return h('span.accentSuccess', "You're enrolled in an upcoming cohort. Feel free to enroll in another one though!")
-    return  h('span.accentSuccess', "You're enrolled in an upcoming cohort")
+  if (props.enrolled) {
+    if (props.upcoming)
+      return h(
+        "span.accentSuccess",
+        "You're enrolled in an upcoming cohort. Feel free to enroll in another one though!"
+      );
+    return h("span.accentSuccess", "You're enrolled in an upcoming cohort");
   }
 
   if (!props.upcoming) {
-    if(props.maintainer) return h('span.accentRed', [
-      "Looks like there aren't any cohorts planned. Create one ", h(Link, {href: "/courses/[slug]/[id]/settings", as: `/courses/${props.courseSlug}/${props.courseId}/settings`}, h('a', 'here')), '.'
-    ])
-    return h('span.accentRed', "Looks like there aren't any cohorts planned :(")
+    if (props.maintainer)
+      return h("span.accentRed", [
+        "Looks like there aren't any cohorts planned. Create one ",
+        h(
+          Link,
+          {
+            href: "/courses/[slug]/[id]/settings",
+            as: `/courses/${props.courseSlug}/${props.courseId}/settings`,
+          },
+          h("a", "here")
+        ),
+        ".",
+      ]);
+    return h(
+      "span.accentRed",
+      "Looks like there aren't any cohorts planned :("
+    );
   }
 
   if (props.inviteOnly) {
-    if (props.maintainer) return h('span.accentRed', [
-      "Learners need to be invited to enroll. Invite someone ", h(Link, {href: `/courses/${props.courseSlug}/${props.courseId}/settings`}, h('a', 'here')), '.'])
-    if(props.invited) return h('span.accentSuccess', "You're invited!")
-    if(props.loggedIn) return h('div', {}, h('span.accentRed', "This course is invite only. Reach out to the facilitators if you're interested!"))
-    return h('div', {}, h('span.accentRed', "This course is invite only. If you've been invited, please log in."))
-  }
-  return null
-}
-
-
-const Cohorts = (props:{cohorts: Course['course_cohorts'], user: string, slug: string, cohort_max_size: number, invited:boolean}) => {
-  let [pastCohorts, upcomingCohorts] = props.cohorts
-  .filter(c=>{
-    if(c.live) return true
-    return !!c.cohort_facilitators.find(f=>f.facilitator===props.user)
-  }).sort(sortByDateAndName)
-    .reduce((acc, cohort)=>{
-      let enrolled = !!cohort.people_in_cohorts.find(p => p.people.id === props.user)
-      let facilitating = !!cohort.cohort_facilitators.find(f=>f.facilitator === props.user)
-      acc[new Date(cohort.start_date)< new Date() ? 0 : 1].push(
-        h(Cohort, {
-          cohort,
-          enrolled, facilitating,
-          slug: props.slug,
-          cohort_max_size: props.cohort_max_size,
-          invited: props.invited
-        })
+    if (props.maintainer)
+      return h("span.accentRed", [
+        "Learners need to be invited to enroll. Invite someone ",
+        h(
+          Link,
+          { href: `/courses/${props.courseSlug}/${props.courseId}/settings` },
+          h("a", "here")
+        ),
+        ".",
+      ]);
+    if (props.invited) return h("span.accentSuccess", "You're invited!");
+    if (props.loggedIn)
+      return h(
+        "div",
+        {},
+        h(
+          "span.accentRed",
+          "This course is invite only. Reach out to the facilitators if you're interested!"
+        )
+      );
+    return h(
+      "div",
+      {},
+      h(
+        "span.accentRed",
+        "This course is invite only. If you've been invited, please log in."
       )
-      return acc
-    },[[],[]] as Array<Array<ReactElement>>)
-
-  return h(Box, {gap:32}, [
-    upcomingCohorts.length === 0 ? null : h('h2', "Upcoming Cohorts"),
-    ...upcomingCohorts,
-    upcomingCohorts.length === 0 || pastCohorts.length === 0 ? null : h(Separator),
-    pastCohorts.length === 0 ? null : h('h2', 'Ongoing and Past Cohorts'),
-    ...pastCohorts
-    ])
+    );
+  }
+  return null;
 }
+
+const Cohorts = (props: {
+  cohorts: Course["course_cohorts"];
+  user: string;
+  slug: string;
+  cohort_max_size: number;
+  invited: boolean;
+}) => {
+  let [pastCohorts, upcomingCohorts] = props.cohorts
+    .filter((c) => {
+      if (c.live) return true;
+      return !!c.cohort_facilitators.find((f) => f.facilitator === props.user);
+    })
+    .sort(sortByDateAndName)
+    .reduce(
+      (acc, cohort) => {
+        let enrolled = !!cohort.people_in_cohorts.find(
+          (p) => p.people.id === props.user
+        );
+        let facilitating = !!cohort.cohort_facilitators.find(
+          (f) => f.facilitator === props.user
+        );
+        acc[new Date(cohort.start_date) < new Date() ? 0 : 1].push(
+          h(Cohort, {
+            cohort,
+            enrolled,
+            facilitating,
+            slug: props.slug,
+            cohort_max_size: props.cohort_max_size,
+            invited: props.invited,
+          })
+        );
+        return acc;
+      },
+      [[], []] as Array<Array<ReactElement>>
+    );
+
+  return h(Box, { gap: 32 }, [
+    upcomingCohorts.length === 0 ? null : h("h2", "Upcoming Cohorts"),
+    ...upcomingCohorts,
+    upcomingCohorts.length === 0 || pastCohorts.length === 0
+      ? null
+      : h(Separator),
+    pastCohorts.length === 0 ? null : h("h2", "Ongoing and Past Cohorts"),
+    ...pastCohorts,
+  ]);
+};
 
 export const Cohort = (props: {
-  cohort: Course['course_cohorts'][0],
-  facilitating?: boolean,
-  enrolled?: boolean,
-  slug:string,
-  cohort_max_size: number,
-  invited: boolean
+  cohort: Course["course_cohorts"][0];
+  facilitating?: boolean;
+  enrolled?: boolean;
+  slug: string;
+  cohort_max_size: number;
+  invited: boolean;
 }) => {
-  let id= props.cohort.id
-  let router = useRouter()
-  let past = new Date(props.cohort.start_date) < new Date()
+  let id = props.cohort.id;
+  let router = useRouter();
+  let past = new Date(props.cohort.start_date) < new Date();
 
-  return h(Box, {h: true, style:{gridAutoColumns:'auto'}}, [
-    h(Box, {gap: 4}, [
-      !props.enrolled && !props.facilitating ? null : h('div', [
-        props.enrolled ? h(Pill, 'enrolled') : null,
-        ' ',
-        props.facilitating ? h(Pill, {borderOnly: true}, 'facilitating') : null,
-        ' ',
-        !props.cohort.live ? h(Pill, {borderOnly: true, red: true}, 'draft') : null,
-      ]),
-      h('h3', {}, h(Link, {
-        href:'/courses/[slug]/[id]/cohorts/[cohortId]',
-        as:  `/courses/${props.slug}/${props.cohort.course}/cohorts/${id}`
-      }, h('a', {style: {textDecoration: 'none'}}, cohortName(props.cohort.name)))),
-      h(Box, {style: {color: colors.textSecondary}, gap: 4}, [
-        h('strong', cohortPrettyDate(props.cohort.start_date, props.cohort.completed)),
-        h('div', [
-          `Facilitated by `,
-          ...props.cohort.cohort_facilitators.flatMap(f=>{
-            return [h(Link, {href:`/people/${f.people.username}`}, h('a', f.people.display_name || f.people.username)), ', ']
-          }).slice(0, -1)
-        ])
-      ]),
-      props.cohort_max_size === 0 || past ? null : props.cohort_max_size > props.cohort.people_in_cohorts.length
-        ? h('span.accentSuccess', `${props.cohort_max_size - props.cohort.people_in_cohorts.length} ${props.cohort_max_size - props.cohort.people_in_cohorts.length === 1 ? 'spot' : 'spots'} left!`)
-        : h('span.accentRed', `Sorry! This cohort is full.`)
-    ]),
-    past || props.enrolled || props.facilitating ? null : h(Box, {gap:8, style: {alignItems: 'center', alignContent: 'center', justifySelf: 'right', textAlign: 'right'}}, [
-      h(Link, {
-        href: `/courses/${router.query.slug}/${props.cohort.course}/cohorts/${props.cohort.id}`
-      }, h('a', {}, h(Primary, 'See schedule')))
-    ])
-  ])
-}
-//feature to add a new cohort to a course
-function MarkCourseLive(props: {id:number, slug: string}) {
-  let {data:course, mutate} = useCourseData(props.id)
-  let [state, setState] = useState<'normal'|'confirm'|'loading'|'complete'>('normal')
-
-  const onClick = async (e: React.MouseEvent)  =>{
-    e.preventDefault()
-    if(!course) return
-    setState('loading')
-    let res = await callApi<UpdateCourseMsg, UpdateCourseResponse>(`/api/courses/${props.id}`, {status: 'live'})
-    if(res.status===200){
-      setState('normal')
-      mutate({...course, status: 'live'})
-    }
-  }
-
-  if(state === 'confirm' || state === 'loading') return h(Modal, {display: true, closeText:"nevermind", onExit: ()=>setState('normal')},[
-    h(Box, {gap: 32}, [
-      h('h2', {style:{textAlign:'center'}}, "Are you sure?"),
-      h(Box, {gap: 16}, [
-        "Before going live please check that you've done these things",
-        h(Box.withComponent('ul'), {gap:16}, [
-          h('li', [
-            "Edit important details in ", h('a', {href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Details`}, "course settings"), "."
+  return h(Box, { h: true, style: { gridAutoColumns: "auto" } }, [
+    h(Box, { gap: 4 }, [
+      !props.enrolled && !props.facilitating
+        ? null
+        : h("div", [
+            props.enrolled ? h(Pill, "enrolled") : null,
+            " ",
+            props.facilitating
+              ? h(Pill, { borderOnly: true }, "facilitating")
+              : null,
+            " ",
+            !props.cohort.live
+              ? h(Pill, { borderOnly: true, red: true }, "draft")
+              : null,
           ]),
-          h('li', [
-            "Written a ", h('a', {href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.id}`}, "curriculum"), "."
+      h(
+        "h3",
+        {},
+        h(
+          Link,
+          {
+            href: "/courses/[slug]/[id]/cohorts/[cohortId]",
+            as: `/courses/${props.slug}/${props.cohort.course}/cohorts/${id}`,
+          },
+          h(
+            "a",
+            { style: { textDecoration: "none" } },
+            cohortName(props.cohort.name)
+          )
+        )
+      ),
+      h(Box, { style: { color: colors.textSecondary }, gap: 4 }, [
+        h(
+          "strong",
+          cohortPrettyDate(props.cohort.start_date, props.cohort.completed)
+        ),
+        h("div", [
+          `Facilitated by `,
+          ...props.cohort.cohort_facilitators
+            .flatMap((f) => {
+              return [
+                h(
+                  Link,
+                  { href: `/people/${f.people.username}` },
+                  h("a", f.people.display_name || f.people.username)
+                ),
+                ", ",
+              ];
+            })
+            .slice(0, -1),
+        ]),
+      ]),
+      props.cohort_max_size === 0 || past
+        ? null
+        : props.cohort_max_size > props.cohort.people_in_cohorts.length
+        ? h(
+            "span.accentSuccess",
+            `${props.cohort_max_size - props.cohort.people_in_cohorts.length} ${
+              props.cohort_max_size - props.cohort.people_in_cohorts.length ===
+              1
+                ? "spot"
+                : "spots"
+            } left!`
+          )
+        : h("span.accentRed", `Sorry! This cohort is full.`),
+    ]),
+    past || props.enrolled || props.facilitating
+      ? null
+      : h(
+          Box,
+          {
+            gap: 8,
+            style: {
+              alignItems: "center",
+              alignContent: "center",
+              justifySelf: "right",
+              textAlign: "right",
+            },
+          },
+          [
+            h(
+              Link,
+              {
+                href: `/courses/${router.query.slug}/${props.cohort.course}/cohorts/${props.cohort.id}`,
+              },
+              h("a", {}, h(Primary, "See schedule"))
+            ),
+          ]
+        ),
+  ]);
+};
+//feature to add a new cohort to a course
+function MarkCourseLive(props: { id: number; slug: string }) {
+  let { data: course, mutate } = useCourseData(props.id);
+  let [state, setState] = useState<
+    "normal" | "confirm" | "loading" | "complete"
+  >("normal");
+
+  const onClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!course) return;
+    setState("loading");
+    let res = await callApi<UpdateCourseMsg, UpdateCourseResponse>(
+      `/api/courses/${props.id}`,
+      { status: "live" }
+    );
+    if (res.status === 200) {
+      setState("normal");
+      mutate({ ...course, status: "live" });
+    }
+  };
+
+  if (state === "confirm" || state === "loading")
+    return h(
+      Modal,
+      {
+        display: true,
+        closeText: "nevermind",
+        onExit: () => setState("normal"),
+      },
+      [
+        h(Box, { gap: 32 }, [
+          h("h2", { style: { textAlign: "center" } }, "Are you sure?"),
+          h(Box, { gap: 16 }, [
+            "Before going live please check that you've done these things",
+            h(Box.withComponent("ul"), { gap: 16 }, [
+              h("li", [
+                "Edit important details in ",
+                h(
+                  "a",
+                  {
+                    href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Details`,
+                  },
+                  "course settings"
+                ),
+                ".",
+              ]),
+              h("li", [
+                "Written a ",
+                h(
+                  "a",
+                  {
+                    href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.id}`,
+                  },
+                  "curriculum"
+                ),
+                ".",
+              ]),
+            ]),
+            h(
+              Primary,
+              { style: { justifySelf: "center" }, onClick },
+              state === "loading" ? h(Loader) : "Go Live!"
+            ),
           ]),
         ]),
-          h(Primary, {style:{justifySelf:'center'}, onClick}, state === 'loading' ? h(Loader) : 'Go Live!')        
-      ])
-    ])
-  ])
+      ]
+    );
 
-  return h(Primary, {onClick: async e => {
-    e.preventDefault()
-    setState('confirm')
-  }}, "Publish!")
+  return h(
+    Primary,
+    {
+      onClick: async (e) => {
+        e.preventDefault();
+        setState("confirm");
+      },
+    },
+    "Publish!"
+  );
 }
 
 // Feature to edit course detail (length, prereqs, one line description)
 
-
-
 // Define Banners
-const Banners = (props:{draft: boolean, id: number, slug:string, isMaintainer: boolean}) => {
-  if(props.draft && props.isMaintainer) {
-    if(props.isMaintainer){
-      return h(TODOBanner, props)
+const Banners = (props: {
+  draft: boolean;
+  id: number;
+  slug: string;
+  isMaintainer: boolean;
+}) => {
+  if (props.draft && props.isMaintainer) {
+    if (props.isMaintainer) {
+      return h(TODOBanner, props);
     }
-    return h(TwoColumnBanner, {red: true}, h(Box, {gap:16},[
-      h(Box, {gap:16}, [
-        h('h3', "This course isn't live yet!"),
-        h('p',[`The maintainer is still working on getting this course in shape. Let them know
-if you have any feedback!`])
+    return h(
+      TwoColumnBanner,
+      { red: true },
+      h(Box, { gap: 16 }, [
+        h(Box, { gap: 16 }, [
+          h("h3", "This course isn't live yet!"),
+          h("p", [
+            `The maintainer is still working on getting this course in shape. Let them know
+if you have any feedback!`,
+          ]),
+        ]),
       ])
-    ]))
+    );
   }
-  return null
-}
+  return null;
+};
 
 // Draft Course ToDo Banner
-const TODOBanner = (props:{
-  id:number
-  slug:string
-}) => {
-  let [expanded, setExpanded] = useState(false)
+const TODOBanner = (props: { id: number; slug: string }) => {
+  let [expanded, setExpanded] = useState(false);
 
-  return h(TwoColumnBanner, {red: true}, [
+  return h(TwoColumnBanner, { red: true }, [
     h(BannerContent, [
-      h(AccentImg, {height:32, width:36, src:"https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/icons/Seedling.png"}),
-      h(Box, {gap:8}, [
-        h('h4', "This course is still a draft"),
-        h('p', 'It’s hidden from public view. People can’t see this page until you publish it.')
+      h(AccentImg, {
+        height: 32,
+        width: 36,
+        src:
+          "https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/icons/Seedling.png",
+      }),
+      h(Box, { gap: 8 }, [
+        h("h4", "This course is still a draft"),
+        h(
+          "p",
+          "It’s hidden from public view. People can’t see this page until you publish it."
+        ),
       ]),
-      ... !expanded ? [] : [
-        h(AccentImg, {height:32, width:36, src:"https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/icons/Bud.png"}),
-        h(Box, {gap:16}, [
-          h('h4', "Before you publish this course make sure that you ...  "),
-          h(TodoList, {
-            persistKey: "course-creation-todo",
-            items: [
-              h("span", [
-                "Edit important details, like description and price, in ", h('a', {href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Details`}, "course settings"), "."
-              ]),
-              h("span", [
-                "Write a comprehensive curriculum for your course, by editing the ", h('a', {href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.id}`}, "Curriculum topic"), " in the forum."
-              ]),
-              h("span", [
-                "Create or edit ", h('a', {href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Templates`}, "templates"), " for reusable forum topics so you don't need to rewrite them for every cohort you run (or you can add these later)."
-              ]),
-              h("span", [
-                "Create your first cohort, in ", h('a', {href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Cohorts`}, "course settings"), ". It will also be a draft that you need to edit before publishing. We'll guide you through it!"
-              ])
-            ]
-          })
-        ]),
-        h(AccentImg, {height:32, width:36, src:"https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/icons/Flower.png"}),
-        h(Box, {gap:16}, [
-          h('h4', "Once you're ready, you can publish it here!"),
-          h(MarkCourseLive, props)
-        ])
-      ]
+      ...(!expanded
+        ? []
+        : [
+            h(AccentImg, {
+              height: 32,
+              width: 36,
+              src:
+                "https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/icons/Bud.png",
+            }),
+            h(Box, { gap: 16 }, [
+              h(
+                "h4",
+                "Before you publish this course make sure that you ...  "
+              ),
+              h(TodoList, {
+                persistKey: "course-creation-todo",
+                items: [
+                  h("span", [
+                    "Edit important details, like description and price, in ",
+                    h(
+                      "a",
+                      {
+                        href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Details`,
+                      },
+                      "course settings"
+                    ),
+                    ".",
+                  ]),
+                  h("span", [
+                    "Write a comprehensive curriculum for your course, by editing the ",
+                    h(
+                      "a",
+                      {
+                        href: `${DISCOURSE_URL}/session/sso?return_path=/t/${props.id}`,
+                      },
+                      "Curriculum topic"
+                    ),
+                    " in the forum.",
+                  ]),
+                  h("span", [
+                    "Create or edit ",
+                    h(
+                      "a",
+                      {
+                        href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Templates`,
+                      },
+                      "templates"
+                    ),
+                    " for reusable forum topics so you don't need to rewrite them for every cohort you run (or you can add these later).",
+                  ]),
+                  h("span", [
+                    "Create your first cohort, in ",
+                    h(
+                      "a",
+                      {
+                        href: `https://hyperlink.academy/courses/${props.slug}/${props.id}/settings?tab=Cohorts`,
+                      },
+                      "course settings"
+                    ),
+                    ". It will also be a draft that you need to edit before publishing. We'll guide you through it!",
+                  ]),
+                ],
+              }),
+            ]),
+            h(AccentImg, {
+              height: 32,
+              width: 36,
+              src:
+                "https://hyperlink-data.nyc3.cdn.digitaloceanspaces.com/icons/Flower.png",
+            }),
+            h(Box, { gap: 16 }, [
+              h("h4", "Once you're ready, you can publish it here!"),
+              h(MarkCourseLive, props),
+            ]),
+          ]),
     ]),
-    h(LinkButton, {style:{justifySelf: 'right', textDecoration: 'none'}, onClick: ()=>setExpanded(!expanded)}, expanded ? "hide checklist" : "show checklist")
-  ])
-}
+    h(
+      LinkButton,
+      {
+        style: { justifySelf: "right", textDecoration: "none" },
+        onClick: () => setExpanded(!expanded),
+      },
+      expanded ? "hide checklist" : "show checklist"
+    ),
+  ]);
+};
 
-export const getStaticProps = async (ctx:any) => {
-  let id = parseInt(ctx.params?.id as string || '' )
-  if(Number.isNaN(id)) return {props: {notFound: true}} as const
+export const getStaticProps = async (ctx: any) => {
+  let id = parseInt((ctx.params?.id as string) || "");
+  if (Number.isNaN(id)) return { props: { notFound: true } } as const;
 
-  let data = await courseDataQuery(id)
-  if(!data) return {props:{notFound: true}} as const
-  let content = await getTaggedPost(data.category_id, 'curriculum')
+  let data = await courseDataQuery(id);
+  if (!data) return { props: { notFound: true } } as const;
+  let content = await getTaggedPost(data.category_id, "curriculum");
 
-  return {props: {notFound: false, content, id, course: data}, revalidate: 1} as const
-}
+  return {
+    props: { notFound: false, content, id, course: data },
+    revalidate: 1,
+  } as const;
+};
 
 export const getStaticPaths = async () => {
-  let prisma = new PrismaClient()
-  let courses = await prisma.courses.findMany({select:{id: true, slug: true}})
-  return {paths:courses.map(course=>{
-    return {params: {id: course.id.toString(), slug: course.slug}}
-  }), fallback: true}
-}
+  let prisma = new PrismaClient();
+  let courses = await prisma.courses.findMany({
+    select: { id: true, slug: true },
+  });
+  return {
+    paths: courses.map((course) => {
+      return { params: { id: course.id.toString(), slug: course.slug } };
+    }),
+    fallback: true,
+  };
+};
 
-
-const BannerContent = styled('div') `
-display: grid; 
-grid-template-columns: min-content auto;
-grid-column-gap: 16px;
-grid-row-gap: 32px;
-`
+const BannerContent = styled("div")`
+  display: grid;
+  grid-template-columns: min-content auto;
+  grid-column-gap: 16px;
+  grid-row-gap: 32px;
+`;

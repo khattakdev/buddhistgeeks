@@ -1,116 +1,129 @@
-import {css} from '@emotion/core'
-import {colors} from '../Tokens'
+import { css } from "@emotion/core";
+import { colors } from "../Tokens";
 export const GlobalStyleSheet = css`
-.textSecondary { color: ${colors.textSecondary} };
-.bgtextSecondary { background-color: ${colors.textSecondary} };
-.accentSuccess { color: ${colors.accentSuccess} };
-.accentRed { color: ${colors.accentRed} };
-.mono {font-family: 'Roboto Mono', mono;}
+  .textSecondary {
+    color: ${colors.textSecondary};
+  }
+  .bgtextSecondary {
+    background-color: ${colors.textSecondary};
+  }
+  .accentSuccess {
+    color: ${colors.accentSuccess};
+  }
+  .accentRed {
+    color: ${colors.accentRed};
+  }
+  .mono {
+    font-family: "Roboto Mono", mono;
+  }
 
-input::placeholder {
-font-style: italic;
-}
+  input::placeholder {
+    font-style: italic;
+  }
 
-html {
-  overflow-y: scroll;
-  overflow-x: hidden;
-  line-height: 1.375;
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  color: ${colors.textPrimary};
-  scroll-behavior: smooth;
-}
+  html {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    line-height: 1.375;
+    font-size: 16px;
+    font-family: "Lato", sans-serif;
+    color: ${colors.textPrimary};
+    scroll-behavior: smooth;
+  }
 
-body {
-  background-color: ${colors.appBackground};
-}
+  body {
+    background-color: ${colors.appBackground};
+  }
 
-a.notBlue {
-  color: inherit;
-}
+  a.notBlue {
+    color: inherit;
+  }
 
+  a.notBlue:visited {
+    color: inherit;
+  }
 
-a.notBlue:visited {
-  color: inherit;
-}
+  a.notBlue:hover {
+    color: ${colors.linkHover};
+  }
 
-a.notBlue:hover {
-  color: ${colors.linkHover};
-}
+  a.notBlue:visited {
+    color: inherit;
+  }
 
+  a.notBlue:hover {
+    color: ${colors.linkHover};
+  }
 
-a.notBlue:visited {
-  color: inherit;
-}
+  a:visited {
+    color: blue;
+  }
 
-a.notBlue:hover {
-  color: ${colors.linkHover};
-}
+  a:hover {
+    color: #00008b;
+  }
 
+  img {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
 
-a:visited {
-  color: blue;
-}
+  h1,
+  h2 {
+    font-family: "Roboto Mono", monospace;
+    font-weight: normal;
+  }
 
-a:hover {
-  color: #00008B;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
 
-img {
-image-rendering: pixelated;
-image-rendering: crisp-edges;
-}
+  h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+  }
 
-h1, h2 {
-  font-family: 'Roboto Mono', monospace;
-  font-weight: normal;
-}
+  h2 {
+    font-size: 2rem;
+    font-weight: bold;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-}
+  h3 {
+    font-size: 1.375rem;
+    font-weight: 900;
+  }
 
-h1 {
-  font-size:2.8rem;
-  font-weight: bold;
-}
+  h4 {
+    font-weight: 900;
+  }
 
-h2 {
-  font-size: 2rem;
-  font-weight: bold;
-}
+  p {
+    margin: 0;
+  }
 
-h3 {
-  font-size: 1.375rem;
-  font-weight: 900;
-}
+  p.big {
+    font-size: 1.25rem;
+  }
 
-h4 {
-  font-weight: 900;
-}
+  hr {
+    width: 100%;
+    color: black;
+    border: 1px solid;
+  }
 
-p { 
-  margin: 0; 
-}
+  small {
+    color: ${colors.textSecondary};
+    display: inline-block;
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+  }
 
-p.big {
-  font-size: 1.25rem;
-}
-
-hr {
-  width: 100%;
-  color: black;
-  border: 1px solid;
-}
-
-small {
-  color: ${colors.textSecondary};
-  display: inline-block;
-  line-height: 1.25rem;
-  font-size: .875rem;
-}
-
-li{
-  margin-left: 32px;
-}
-`
+  li {
+    margin-left: 32px;
+  }
+`;

@@ -5,9 +5,9 @@ export const colors = {
   grey55: "#8C8C8C",
   grey35: "#595959",
   grey15: "#272727",
-  appBackground : "#FDFCFA",
-  textSecondary: '#595959',
-  textPrimary: '#272727',
+  appBackground: "#FDFCFA",
+  textSecondary: "#595959",
+  textPrimary: "#272727",
   borderColor: "#8C8C8C",
   borderSelected: "blue",
   backgroundRed: "#F9EBE8",
@@ -15,11 +15,11 @@ export const colors = {
   accentSuccess: "#348C1E",
   accentPeach: "#F8EFE2",
   accentLightBlue: "#F0F7FA",
-  linkHover: "#00008B"
-}
+  linkHover: "#00008B",
+};
 
-export type Spacing = 0 | 4 | 8 | 16 | 24 | 32 | 48 | 64 | 256
-export type Widths = 400 | 640 | 1024
+export type Spacing = 0 | 4 | 8 | 16 | 24 | 32 | 48 | 64 | 256;
+export type Widths = 400 | 640 | 1024;
 
-export const Mobile = '@media(max-width:420px)'
-export const Tablet = '@media(max-width:768px)'
+export const Mobile = "@media(max-width:420px)";
+export const Tablet = "@media(max-width:768px)";

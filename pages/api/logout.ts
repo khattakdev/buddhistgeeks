@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse} from 'next'
-import {removeToken} from '../../src/token'
+import { NextApiRequest, NextApiResponse } from "next";
+import { removeToken } from "../../src/token";
 export default async (_req: NextApiRequest, res: NextApiResponse) => {
-  console.log('loggin out')
-  removeToken(res)
-  res.end()
-}
+  console.log("loggin out");
+  removeToken(res);
+  res.end();
+};
