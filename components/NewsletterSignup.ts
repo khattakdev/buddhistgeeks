@@ -1,5 +1,4 @@
 import h from "react-hyperscript";
-import styled from "@emotion/styled";
 import { useState } from "react";
 import { useApi } from "../src/apiHelpers";
 import {
@@ -12,14 +11,15 @@ import { Secondary } from "./Button";
 
 const NewsLetter = () => {
   let [email, setEmail] = useState("");
+  let [name, setName] = useState("");
   let [status, callNewsletterSignup] = useApi<
     NewsletterSignupMsg,
     NewsletterSignupResponse
-  >([email]);
+  >([name, email]);
 
   let onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    callNewsletterSignup("/api/signup/newsletter", { email });
+    callNewsletterSignup("/api/signup/newsletter", { name, email });
   };
 
   return h(FormBox, { onSubmit, gap: 16, style: { maxWidth: 350 } }, [
@@ -34,9 +34,9 @@ const NewsLetter = () => {
       h(Input, {
         placeholder: "Your first name",
         type: "name",
-        value: email,
+        value: name,
         style: { width: 220 },
-        onChange: (e) => alert(e.currentTarget.value),
+        onChange: (e) => setName(e.currentTarget.value),
       }),
       h(Input, {
         placeholder: "Your email",
