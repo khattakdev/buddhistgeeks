@@ -81,13 +81,26 @@ let LearnMenuItems = () =>
     ),
     h(
       Link,
-      { href: "/clubs", passHref: true },
-      h(LearnMenuItem, [h("b.mono", "clubs"), h("p", "social peer learning")])
+      { href: "/retreat", passHref: true },
+      h(LearnMenuItem, [h("b.mono", "retreat"), h("p", "multi-day intensives")])
+    ),
+    h(
+      Link,
+      { href: "/groups", passHref: true },
+      h(LearnMenuItem, [h("b.mono", "groups"), h("p", "community support")])
     ),
     h(
       Link,
       { href: "/events", passHref: true },
       h(LearnMenuItem, [h("b.mono", "events"), h("p", "single sessions")])
+    ),
+    h(
+      Link,
+      { href: "/guides", passHref: true },
+      h(LearnMenuItem, [
+        h("b.mono", "guides"),
+        h("p", "theoretical frameworks"),
+      ])
     ),
   ]);
 
@@ -160,13 +173,23 @@ const MobileMenu = (props: { user: any; mutateUser: any }) => {
           ),
           h(
             Link,
-            { href: "/clubs" },
-            h(NavLink, [h("b", "clubs"), h("p", "social peer learning")])
+            { href: "/retreat" },
+            h(NavLink, [h("b", "retreat"), h("p", "multi-day intensives")])
+          ),
+          h(
+            Link,
+            { href: "/groups" },
+            h(NavLink, [h("b", "groups"), h("p", "community support")])
           ),
           h(
             Link,
             { href: "/events" },
             h(NavLink, [h("b", "events"), h("p", "single sessions")])
+          ),
+          h(
+            Link,
+            { href: "/guides" },
+            h(NavLink, [h("b", "guides"), h("p", "theoretical frameworks")])
           ),
           !props.user
             ? null
@@ -301,10 +324,14 @@ const FeedbackModal = () => {
 };
 
 const CoursesButton = styled(Primary)`
-  color: blue;
+  color: #4b93cf;
   background-color: white;
-  border-color: blue;
+  border-color: #4b93cf;
   padding: 7px 16px;
+  &:hover {
+    color: white;
+    background-color: #4b93cf;
+  }
 `;
 
 const FullPageOverlay = styled("div")`
