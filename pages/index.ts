@@ -231,7 +231,7 @@ const LandingContainer = styled("div")`
 /* Text Styling for Landing Content */
 const Title = styled("h1")`
   font-family: "Roboto Mono", monospace;
-  font-size: 4rem;
+  font-size: 3.7rem;
   text-decoration: none;
   font-weight: bold;
   color: blue;
