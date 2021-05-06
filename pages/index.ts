@@ -68,7 +68,7 @@ const Landing = (props: Props) => {
   console.log(props.events);
   return h(Box, { gap: 48 }, [
     h(Welcome),
-    h(WhyHyperlink, {}, h(Body, {}, h(Intro, { style: { width: "400px" } }))),
+    h(WhyHyperlink, {}, h(Body, {}, h(Intro))),
     !courses || courses.length === 0
       ? null
       : h(Box, { gap: 48 }, [
