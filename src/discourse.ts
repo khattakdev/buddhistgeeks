@@ -18,7 +18,7 @@ let fetchWithBackoff = async (
     let value = 1000 * 2 ** exponent;
     await new Promise((resolve) => {
       let backoff = Math.min(value + Math.floor(Math.random() * value), 64000);
-      setTimeout(() => resolve(), backoff);
+      setTimeout(() => resolve("Promise Resolved"), backoff);
     });
     return fetchWithBackoff(url, options, exponent + 1);
   }
