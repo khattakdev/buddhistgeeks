@@ -110,6 +110,7 @@ export const LibraryLayout: React.FC<Props> = (props) => {
 
 function Newsletter() {
   let [email, setEmail] = useState("");
+  let [name, _] = useState("Set me in Code");
   let [status, callNewsletterSignup] = useApi<
     NewsletterSignupMsg,
     NewsletterSignupResponse
@@ -117,7 +118,7 @@ function Newsletter() {
 
   let onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    callNewsletterSignup("/api/signup/newsletter", { email });
+    callNewsletterSignup("/api/signup/newsletter", { name, email });
   };
 
   return h(
