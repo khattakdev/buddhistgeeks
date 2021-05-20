@@ -328,10 +328,6 @@ const CoursesButton = styled(Primary)`
   background-color: white;
   border-color: #4b93cf;
   padding: 7px 16px;
-  &:hover {
-    color: white;
-    background-color: #4b93cf;
-  }
 `;
 
 const FullPageOverlay = styled("div")`
