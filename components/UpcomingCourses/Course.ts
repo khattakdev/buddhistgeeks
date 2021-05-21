@@ -2,32 +2,34 @@ import styled from "@emotion/styled";
 
 import h from "react-hyperscript";
 
-export default function UpcomingCourse() {
+export default function UpcomingCourse(props: {
+  title: string;
+  cohortNumber: number;
+  description: string;
+  startDate: string;
+  spotsLeft: number;
+}) {
+  const { title, cohortNumber, description, startDate, spotsLeft } = props;
   return h(Course, {}, [
     h(sideImageStyle, {}),
     h(contentStyle, {}, [
-      h(HeaderStyle, {}, "Neurodharma"),
-      h(CohortStyle, {}, "Cohort #1"),
-      h(
-        paragraphStyle,
-        {},
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centurie"
-      ),
-      h(startDateStyle, {}, "Starts June 10, 2021 | "),
-      h(spotLeftStyle, {}, "9 spots left!"),
+      h(HeaderStyle, {}, title),
+      h(CohortStyle, {}, `Cohort #${cohortNumber}`),
+      h(paragraphStyle, {}, description),
+      h(startDateStyle, {}, `Starts ${startDate} | `),
+      h(spotLeftStyle, {}, `${spotsLeft} spots left!`),
     ]),
   ]);
 }
 
 const Course = styled("div")`
-  max-width: 510px;
+  max-width: 48%;
   min-width: 410px;
   min-height: 300px;
   margin: 0 5px;
   margin-top: 10px;
   display: flex;
   border: 2px solid #fcc934;
-  background
 `;
 
 const HeaderStyle = styled("h2")`
@@ -65,6 +67,6 @@ const spotLeftStyle = styled("span")`
 
 const sideImageStyle = styled("div")`
   background: url("https://images.pexels.com/photos/7651065/pexels-photo-7651065.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-  width: 180%;
+  width: 140%;
   height: 100%;
 `;
