@@ -48,11 +48,14 @@ const courses = [
 export default function UpcomingCourse() {
   const coursesHTML = courses.map((course) => h(Course, course));
   return h("div", {}, [
-    h("h1", {}, "Upcomming Courses"),
+    h(HeaderStyle, {}, "Upcomming Courses"),
     h(CoursesStyle, {}, coursesHTML),
   ]);
 }
 
+const HeaderStyle = styled("h1")`
+  margin-bottom: 20px;
+`;
 const CoursesStyle = styled("div")`
   display: flex;
   flex-wrap: wrap;
