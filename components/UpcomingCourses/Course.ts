@@ -73,4 +73,3 @@ const sideImageStyle = styled("img")`
   width: 30%;
   height: 100%;
 `;
-// background: url("https://images.pexels.com/photos/7651065/pexels-photo-7651065.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
