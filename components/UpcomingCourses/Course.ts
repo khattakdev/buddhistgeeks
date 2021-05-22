@@ -4,14 +4,18 @@ import h from "react-hyperscript";
 
 export default function UpcomingCourse(props: {
   title: string;
+  image: string;
   cohortNumber: number;
   description: string;
   startDate: string;
   spotsLeft: number;
 }) {
-  const { title, cohortNumber, description, startDate, spotsLeft } = props;
+  const { title, image, cohortNumber, description, startDate, spotsLeft } =
+    props;
   return h(Course, {}, [
-    h(sideImageStyle, {}),
+    h(sideImageStyle, {
+      src: image,
+    }),
     h(contentStyle, {}, [
       h(HeaderStyle, {}, title),
       h(CohortStyle, {}, `Cohort #${cohortNumber}`),
@@ -65,8 +69,8 @@ const spotLeftStyle = styled("span")`
   font-weight: bold;
 `;
 
-const sideImageStyle = styled("div")`
-  background: url("https://images.pexels.com/photos/7651065/pexels-photo-7651065.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-  width: 140%;
+const sideImageStyle = styled("img")`
+  width: 30%;
   height: 100%;
 `;
+// background: url("https://images.pexels.com/photos/7651065/pexels-photo-7651065.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
