@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { InferGetServerSidePropsType, GetServerSidePropsContext } from "next";
 
 import Intro from "writing/HomepageIntro.mdx";
+import UpcomingCourses from "components/UpcomingCourses";
 import { Mobile, Tablet } from "components/Tokens";
 import { Box, Body, FlexGrid } from "components/Layout";
 import { Primary, Secondary } from "components/Button";
@@ -69,6 +70,7 @@ const Landing = (props: Props) => {
   return h(Box, { gap: 48 }, [
     h(Welcome),
     h(WhyHyperlink, {}, h(Body, {}, h(Intro))),
+    h(Body, {}, h(UpcomingCourses)),
     !courses || courses.length === 0
       ? null
       : h(Box, { gap: 48 }, [
