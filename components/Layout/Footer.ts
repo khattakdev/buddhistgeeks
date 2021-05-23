@@ -13,36 +13,34 @@ export default function Footer() {
           h("h4", "More Info"),
           h(
             Link,
-            { href: "/team", passHref: true },
+            { href: "https://www.buddhistgeeks.org/team", passHref: true },
             h(FooterLink, "About the Team")
           ),
           h(
             Link,
-            { href: "/manual", passHref: true },
-            h(FooterLink, "Hyperlink Manual")
+            { href: "https://www.buddhistgeeks.guide", passHref: true },
+            h(FooterLink, "Buddhist Geeks Guide")
           ),
-          h(
-            Link,
-            { href: "/library", passHref: true },
-            h(FooterLink, "Hyperlink Library")
-          ),
-          // h(Link, {href: '/faq', passHref: true}, h(FooterLink, 'FAQ')),
         ]),
         h(Box, { gap: 4 }, [
           h("h4", "Contact Us"),
-          h(FooterLink, { href: "https://twitter.com/hyperlink_a" }, "Twitter"),
-          h(FooterLink, { href: "mailto:contact@hyperlink.academy" }, "Email"),
+          h(
+            FooterLink,
+            { target: "_blank", href: "http://www.twitter.com/buddhistgeeks" },
+            "Twitter"
+          ),
+          h(FooterLink, { href: "mailto:team@buddhistgeeks.org" }, "Email"),
         ]),
         h(Box, { gap: 4 }, [
           h("h4", "Technical"),
           h(
             FooterLink,
-            { href: "https://gitlab.com/hyperlink-academy/app" },
+            { href: "https://github.com/khattakdev/buddhistgeeks/" },
             "Source Code"
           ),
           h(
             FooterLink,
-            { href: "https://gitlab.com/hyperlink-academy/app/-/issues/new?" },
+            { href: "https://github.com/khattakdev/buddhistgeeks/issues/new" },
             "Report a Bug"
           ),
         ]),
@@ -54,8 +52,6 @@ export default function Footer() {
       ]),
       h("br"),
       h(Separator),
-      h("br"),
-      h("p", `© Learning Futures Inc`),
     ]),
   ]);
 }

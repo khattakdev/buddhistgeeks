@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Box, LabelBox, FormBox } from "components/Layout";
 import { Input, Error, Info, CheckBox, PasswordInput } from "components/Form";
 import { Primary } from "components/Button";
-import { AccentImg, HalfLoopImg } from "components/Images";
+import { AccentImg } from "components/Images";
 import { useUserData } from "src/data";
 import { callApi, useApi } from "src/apiHelpers";
 import { useDebouncedEffect } from "src/hooks";
@@ -23,7 +23,7 @@ import { usernameValidate } from "src/utils";
 const COPY = {
   submitButton: "Create your account",
   headerDescription:
-    "We're hyped for you to join the Hyperlink community! Let's learn together.",
+    "We’re excited for you to join the Buddhist Geeks training network!Let’s practice together.",
 };
 
 const Signup = () => {
@@ -70,15 +70,7 @@ const Signup = () => {
 
   return h(FormBox, { onSubmit, width: 400, ma: true, gap: 32 }, [
     h(Box, { gap: 8 }, [
-      h(SignUpHeader, [
-        h("h1", "Sign Up"),
-        h(HalfLoopImg, {
-          src1: "/img/sailboat-1.gif",
-          src2: "/img/sailboat-2.gif",
-          alt: "an animated gif of a sailboat, boatin'",
-          startLoop: 333,
-        }),
-      ]),
+      h(SignUpHeader, [h("h1", "Sign Up")]),
       h("p.big", COPY.headerDescription),
       h("p.textSecondary", [
         "Or ",

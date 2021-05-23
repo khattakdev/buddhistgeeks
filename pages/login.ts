@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Box, LabelBox, FormBox } from "components/Layout";
 import { Input, Error, Info } from "components/Form";
 import { Primary } from "components/Button";
-import { AccentImg, HalfLoopImg } from "components/Images";
+import { AccentImg } from "components/Images";
 import { useApi } from "src/apiHelpers";
 import { Result, Msg } from "pages/api/login";
 import {
@@ -63,16 +63,7 @@ const Login = () => {
 
   return h(FormBox, { onSubmit, width: 400, ma: true, gap: 32 }, [
     h(Box, [
-      h(LoginHeader, [
-        h("h1", COPY.loginHeader),
-
-        h(HalfLoopImg, {
-          src1: "/img/door-1.gif",
-          src2: "/img/door-2.gif",
-          alt: "an animated gif of a entrance to the sparkle void",
-          startLoop: 1200,
-        }),
-      ]),
+      h(LoginHeader, [h("h1", COPY.loginHeader)]),
       h("p.textSecondary", [
         "Or ",
         h(Link, { href: "/signup" }, h("a", "sign up")),
