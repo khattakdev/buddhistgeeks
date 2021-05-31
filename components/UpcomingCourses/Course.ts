@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-
+import { TabletLarge } from "../Tokens";
 import h from "react-hyperscript";
 
 export default function UpcomingCourse(props: {
@@ -34,6 +34,10 @@ const Course = styled("div")`
   margin-top: 10px;
   display: flex;
   border: 2px solid #fcc934;
+
+  ${TabletLarge} {
+    max-width: 98%;
+  }
 `;
 
 const HeaderStyle = styled("h2")`
