@@ -91,6 +91,12 @@ export const LandingBody = styled("div")`
   box-sizing: border-box;
 `;
 
+export const Image = styled.img((props: { width: string }) => ({
+  height: "auto",
+  width: props.width,
+  marginBottom: "30px",
+}));
+
 export const LandingHeaderWrapper = styled("div")`
   padding: 32px 32px 0 32px;
 
