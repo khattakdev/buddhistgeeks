@@ -226,7 +226,7 @@ const LandingContainer = styled("div")`
   height: 700px;
 
   ${Tablet} {
-    height: auto;
+    background-size: 40%;
     background-position: right 80px;
   }
 
