@@ -23,3 +23,5 @@ export type Widths = 400 | 640 | 1024;
 
 export const Mobile = "@media(max-width:420px)";
 export const Tablet = "@media(max-width:768px)";
+export const TabletLarge = "@media(max-width:900px)";
+export const LargeScreens = "@media(min-width: 1440px)";

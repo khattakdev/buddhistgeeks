@@ -4,7 +4,14 @@ import Head from "next/head";
 import h from "react-hyperscript";
 import { Fragment } from "react";
 
-import { Spacing, colors, Widths, Mobile, Tablet } from "../Tokens";
+import {
+  Spacing,
+  colors,
+  Widths,
+  Mobile,
+  Tablet,
+  TabletLarge,
+} from "../Tokens";
 import { GlobalStyleSheet } from "./GlobalStyleSheet";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -19,8 +26,7 @@ const Layout: React.SFC = (props) => {
         Head,
         { children: [] },
         h("link", {
-          href:
-            "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
+          href: "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
           rel: "stylesheet",
         })
       ),
@@ -41,8 +47,7 @@ const Layout: React.SFC = (props) => {
       Head,
       { children: [] },
       h("link", {
-        href:
-          "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
         rel: "stylesheet",
       })
     ),
@@ -85,6 +90,12 @@ export const LandingBody = styled("div")`
   margin: 0;
   box-sizing: border-box;
 `;
+
+export const Image = styled.img((props: { width: string }) => ({
+  height: "auto",
+  width: props.width,
+  marginBottom: "30px",
+}));
 
 export const LandingHeaderWrapper = styled("div")`
   padding: 32px 32px 0 32px;
@@ -186,7 +197,7 @@ export const LandingPageFeatures = styled("div")`
   display: grid;
   grid-gap: 64px;
   grid-template-columns: auto auto auto;
-  ${Tablet} {
+  ${TabletLarge} {
     grid-template-rows: auto auto auto;
     grid-template-columns: auto;
     max-width: 400px;

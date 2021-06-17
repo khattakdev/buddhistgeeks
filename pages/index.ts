@@ -4,7 +4,7 @@ import { InferGetServerSidePropsType, GetServerSidePropsContext } from "next";
 
 import Intro from "writing/HomepageIntro.mdx";
 import UpcomingCourses from "components/UpcomingCourses";
-import { Mobile, Tablet } from "components/Tokens";
+import { Mobile, Tablet, LargeScreens } from "components/Tokens";
 import { Box, Body, FlexGrid } from "components/Layout";
 import { Primary, Secondary } from "components/Button";
 // import {TitleImg} from '../components/Images'
@@ -70,7 +70,7 @@ const Landing = (props: Props) => {
   return h(Box, { gap: 48 }, [
     h(Welcome),
     h(WhyHyperlink, {}, h(Body, {}, h(Intro))),
-    h(Body, {}, h(UpcomingCourses)),
+    h(UpcomingCoursesStyle, {}, h(UpcomingCourses)),
     !courses || courses.length === 0
       ? null
       : h(Box, { gap: 48 }, [
@@ -183,6 +183,12 @@ let WhyHyperlink = styled("div")`
   text-align: center;
 `;
 
+const UpcomingCoursesStyle = styled("div")`
+  ${LargeScreens} {
+    margin-left: -80px;
+    margin-right: -80px;
+  }
+`;
 export const getServerSideProps = async ({
   req,
   res,
@@ -220,7 +226,7 @@ const LandingContainer = styled("div")`
   height: 700px;
 
   ${Tablet} {
-    height: auto;
+    background-size: 40%;
     background-position: right 80px;
   }
 

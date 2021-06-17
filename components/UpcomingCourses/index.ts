@@ -59,6 +59,8 @@ const HeaderStyle = styled("h1")`
 const CoursesStyle = styled("div")`
   display: flex;
   flex-wrap: wrap;
-  width: 125%;
+
   margin-left: -20px;
 `;
+
+/* couseStyle: width: 125%; */
